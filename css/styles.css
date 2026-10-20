@@ -495,6 +495,136 @@ textarea, input[type="text"] {
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
+
+  /* Photo Instructions & Gallery Previews */
+.photo-instructions {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.photo-gallery-preview {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.thumb-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.thumb-wrapper img {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.thumb-remove {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Modal Overlay & Card */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: var(--color-surface);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 450px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.preview-details-card {
+  background: var(--color-bg);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.preview-details-card p {
+  margin-bottom: 0.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* My Shop Expandable Item Cards */
+.shop-expandable-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.card-summary {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: #fff;
+}
+
+.card-details-expanded {
+  padding: 1rem;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.detail-gallery {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-gallery img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 0.4rem;
+}
+
+.edit-fields-group label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  display: block;
+  margin-top: 0.5rem;
+}
   font-weight: 600;
   cursor: pointer;
 }

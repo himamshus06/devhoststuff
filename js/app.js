@@ -1,9 +1,16 @@
-// js/app.js - Localization & Dynamic PWA Logic
+// js/app.js - Complete PWA Logic & Handlers
 
-let currentLang = 'kn'; // Default to Kannada
-let myListings = [];   // Dynamic app state for published crafts
+let currentLang = 'kn';
+let myListings = [];
+let activeListingMode = null; // 'manual' or 'ai'
+let currentManualStep = 1;
+const totalManualSteps = 3;
 
-// Complete Pure Dictionaries with All Required Listing Fields
+// Photo storage buffers (Max 5 photos each)
+let manualPhotos = [];
+let aiPhotos = [];
+let pendingPublishData = null; // Buffer for preview modal
+
 const i18nDict = {
   kn: {
     langBtnText: "English",
@@ -17,41 +24,47 @@ const i18nDict = {
     btnShopSub: "ನಿಮ್ಮ ವಸ್ತುಗಳ ಪಟ್ಟಿ ಮತ್ತು ಗಳಿಕೆ",
     back: "ಹಿಂದಕ್ಕೆ",
     addTitle: "ಹೊಸ ಉತ್ಪನ್ನ ಸೇರಿಸಿ",
-    photoLabel: "ಉತ್ಪನ್ನದ ಫೋಟೋಗಳು",
-    uploadPrompt: "ಫೋಟೋ ತೆಗೆಯಲು ಅಥವಾ ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಇಲ್ಲಿ ಸ್ಪರ್ಶಿಸಿ",
-    changePhoto: "❌ ಬದಲಾಯಿಸಿ",
+    photoLabel: "ಉತ್ಪನ್ನದ ಫೋಟೋಗಳು (ಗರಿಷ್ಠ 5)",
+    photoGuide: "📸 ಗರಿಷ್ಠ 5 ಫೋಟೋಗಳು: ಮುಂಭಾಗ, ಮೇಲ್ಭಾಗ, ಪಕ್ಕದ ನೋಟ, ಇತರ 2 ಚಿತ್ರಗಳು",
+    uploadPrompt: "ಫೋಟೋಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ",
     voiceSectionLabel: "ಧ್ವನಿ ಮೂಲಕ ವಿವರಣೆ ನೀಡಿ (Speech to Text)",
     descPlaceholder: "ಉತ್ಪನ್ನದ ವಿವರ, ವಸ್ತು, ಅಳತೆ ಕುರಿತು ಮಾತನಾಡಿ...",
     micBtn: "ಮಾತನಾಡಿ",
     listeningMsg: "🎙️ ಆಲಿಸಲಾಗುತ್ತಿದೆ... ಮಾತನಾಡಿ",
-    speechError: "⚠️ ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ ಅಥವಾ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ.",
+    speechError: "⚠️ ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ಲಭ್ಯವಿಲ್ಲ.",
     aiGenerateBtn: "AI ಮೂಲಕ ವಿವರಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ",
     aiAnalyzing: "⏳ AI ವಿಶ್ಲೇಷಿಸುತ್ತಿದೆ...",
-    formHeader: "📝 ಉತ್ಪನ್ನ ವಿವರಗಳು",
-    fieldTitle: "ಉತ್ಪನ್ನದ ಹೆಸರು (Product Name):",
-    fieldStory: "ಸಂಕ್ಷಿಪ್ತ ವಿವರಣೆ (Brief Description):",
-    fieldPrice: "ಬೆಲೆ (Price in ₹):",
-    fieldQuantity: "ಲಭ್ಯವಿರುವ ಪ್ರಮಾಣ (Quantity):",
-    fieldMaterial: "ಬಳಸಿದ ವಸ್ತು (Material):",
-    fieldDimensions: "ಅಳತೆಗಳು (Dimensions):",
-    fieldWeight: "ಅಂದಾಜು ತೂಕ (Approx Weight):",
-    fieldAddress: "ಮಾರಾಟಗಾರರ ವಿಳಾಸ (Seller Address):",
+    chooserHeader: "ನೀವು ಹೇಗೆ ಉತ್ಪನ್ನವನ್ನು ಪಟ್ಟಿ ಮಾಡಲು ಬಯಸುತ್ತೀರಿ?",
+    modeAiTitle: "AI ಧ್ವನಿ / ವಿವರಣೆ",
+    modeAiSub: "ಮಾತನಾಡಿ ಅಥವಾ ಬರೆಯಿರಿ (AI ಆಟೋಫಿಲ್)",
+    modeManualTitle: "ಹಂತ-ಹಂತದ ಮಾಂತ್ರಿಕ (Wizard)",
+    modeManualSub: "ಒಂದೊಂದೇ ವಿವರವಾಗಿ ನೀಡಿ",
+    btnNext: "ಮುಂದಕ್ಕೆ",
+    btnBack: "ಹಿಂದಕ್ಕೆ",
+    reviewHeader: "🤖 AI ಪರಿಶೀಲನಾ ಮಾಂತ್ರಿಕ",
+    fieldTitle: "ಉತ್ಪನ್ನದ ಹೆಸರು:",
+    fieldStory: "ಸಂಕ್ಷಿಪ್ತ ವಿವರಣೆ:",
+    fieldPrice: "ಬೆಲೆ (₹):",
+    fieldQuantity: "ಪ್ರಮಾಣ:",
+    fieldMaterial: "ಬಳಸಿದ ವಸ್ತು:",
+    fieldDimensions: "ಅಳತೆಗಳು:",
+    fieldWeight: "ಅಂದಾಜು ತೂಕ:",
+    fieldAddress: "ಮಾರಾಟಗಾರರ ವಿಳಾಸ:",
     addressPrivacyNote: "🔒 ವಹಿವಾಟು ವೇದಿಕೆಯ ಮೂಲಕ ಸುರಕ್ಷಿತವಾಗಿ ನಡೆಯುತ್ತದೆ.",
     publishBtn: "ಮಾರುಕಟ್ಟೆಗೆ ಹಾಕಿ",
+    btnPreview: "ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಿ",
+    previewTitle: "🔍 ಅಂತಿಮ ಪಟ್ಟಿ ಪರಿಶೀಲನೆ",
+    btnEdit: "✏️ ಬದಲಾಯಿಸಿ",
+    btnConfirmPublish: "🚀 ಖಚಿತಪಡಿಸಿ ಮತ್ತು ಪ್ರಕಟಿಸಿ",
     ordersTitle: "ನನ್ನ ಆರ್ಡರ್‌ಗಳು",
     noOrders: "ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಇನ್ನು ಬಂದಿಲ್ಲ",
     shopTitle: "ನನ್ನ ಅಂಗಡಿ",
     statActive: "ಸಕ್ರಿಯ ಉತ್ಪನ್ನಗಳು",
     statEarnings: "ಒಟ್ಟು ಗಳಿಕೆ",
     noProducts: "ಇನ್ನೂ ಯಾವುದೇ ಉತ್ಪನ್ನಗಳನ್ನು ಸೇರಿಸಲಾಗಿಲ್ಲ",
-    publishSuccess: "🎉 ಉತ್ಪನ್ನ ಯಶಸ್ವಿಯಾಗಿ ಮಾರುಕಟ್ಟೆಗೆ ಸೇರಿಸಲಾಗಿದೆ!",
-    chooserHeader: "ನೀವು ಹೇಗೆ ಉತ್ಪನ್ನವನ್ನು ಪಟ್ಟಿ ಮಾಡಲು ಬಯಸುತ್ತೀರಿ?",
-modeAiTitle: "AI ಧ್ವನಿ / ವಿವರಣೆ",
-modeAiSub: "ಮಾತನಾಡಿ ಅಥವಾ ಬರೆಯಿರಿ (AI ಆಟೋಫಿಲ್)",
-modeManualTitle: "ಹಂತ-ಹಂತದ ಮಾಂತ್ರಿಕ (Wizard)",
-modeManualSub: "ಒಂದೊಂದೇ ವಿವರವಾಗಿ ನೀಡಿ",
-btnNext: "ಮುಂದಕ್ಕೆ",
-reviewHeader: "🤖 AI ಪರಿಶೀಲನಾ ಮಾಂತ್ರಿಕ"
+    publishSuccess: "🎉 ಉತ್ಪನ್ನ ಯಶಸ್ವಿಯಾಗಿ ಪ್ರಕಟಿಸಲಾಗಿದೆ!",
+    editSave: "💾 ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ",
+    maxPhotoError: "⚠️ ಗರಿಷ್ಠ 5 ಫೋಟೋಗಳನ್ನು ಮಾತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಬಹುದು."
   },
   en: {
     langBtnText: "ಕನ್ನಡ",
@@ -65,17 +78,24 @@ reviewHeader: "🤖 AI ಪರಿಶೀಲನಾ ಮಾಂತ್ರಿಕ"
     btnShopSub: "View active catalogue",
     back: "Back",
     addTitle: "Add New Product",
-    photoLabel: "Product Pictures",
-    uploadPrompt: "Tap to capture or upload photo",
-    changePhoto: "❌ Change",
+    photoLabel: "Product Photos (Max 5)",
+    photoGuide: "📸 Max 5 photos: Front view, Top view, Side view, + 2 detail photos",
+    uploadPrompt: "Tap to capture or upload photos",
     voiceSectionLabel: "Speak Product Details (Speech to Text)",
     descPlaceholder: "Speak out your product details, material, dimensions...",
     micBtn: "Speak",
     listeningMsg: "🎙️ Listening... Speak now",
-    speechError: "⚠️ Speech recognition unsupported or permission denied.",
+    speechError: "⚠️ Speech recognition unavailable.",
     aiGenerateBtn: "Auto-fill Fields using AI Vision",
     aiAnalyzing: "⏳ AI Analyzing...",
-    formHeader: "📝 Product Details",
+    chooserHeader: "How would you like to list your product?",
+    modeAiTitle: "AI Voice / Description",
+    modeAiSub: "Speak or type paragraph (AI Auto-fill)",
+    modeManualTitle: "Step-by-Step Wizard",
+    modeManualSub: "Fill details across guided steps",
+    btnNext: "Next",
+    btnBack: "Back",
+    reviewHeader: "🤖 AI Review Wizard",
     fieldTitle: "Product Name:",
     fieldStory: "Brief Description:",
     fieldPrice: "Price (₹):",
@@ -84,8 +104,12 @@ reviewHeader: "🤖 AI ಪರಿಶೀಲನಾ ಮಾಂತ್ರಿಕ"
     fieldDimensions: "Dimensions:",
     fieldWeight: "Approx Weight:",
     fieldAddress: "Seller Address:",
-    addressPrivacyNote: "🔒 All payments & delivery escrow are routed securely through our platform.",
+    addressPrivacyNote: "🔒 All payments & delivery escrow routed securely.",
     publishBtn: "Publish to Marketplace",
+    btnPreview: "Preview Details",
+    previewTitle: "🔍 Final Listing Review",
+    btnEdit: "✏️ Edit Details",
+    btnConfirmPublish: "🚀 Confirm & Publish",
     ordersTitle: "My Orders",
     noOrders: "No orders received yet",
     shopTitle: "My Shop",
@@ -93,17 +117,11 @@ reviewHeader: "🤖 AI ಪರಿಶೀಲನಾ ಮಾಂತ್ರಿಕ"
     statEarnings: "Total Earnings",
     noProducts: "No products added to your shop yet",
     publishSuccess: "🎉 Product published successfully!",
-    chooserHeader: "How would you like to list your product?",
-modeAiTitle: "AI Voice / Description",
-modeAiSub: "Speak or type paragraph (AI Auto-fill)",
-modeManualTitle: "Step-by-Step Wizard",
-modeManualSub: "Fill details across guided steps",
-btnNext: "Next",
-reviewHeader: "🤖 AI Review Wizard"
+    editSave: "💾 Save Changes",
+    maxPhotoError: "⚠️ You can upload a maximum of 5 photos."
   }
 };
 
-// Initialization & Custom CSS Theme Properties Injection
 document.addEventListener("DOMContentLoaded", () => {
   if (window.APP_CONFIG) {
     const root = document.documentElement;
@@ -118,14 +136,12 @@ document.addEventListener("DOMContentLoaded", () => {
   updateLanguageUI();
 });
 
-// Navigation & Screen Control
 function switchScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(screenId).classList.add('active');
   window.scrollTo(0, 0);
 }
 
-// Language Switching Engine
 function toggleLanguage() {
   currentLang = currentLang === 'kn' ? 'en' : 'kn';
   updateLanguageUI();
@@ -133,13 +149,11 @@ function toggleLanguage() {
 
 function updateLanguageUI() {
   const texts = i18nDict[currentLang];
-
   if (window.APP_CONFIG) {
     document.getElementById("page-title").innerText = window.APP_CONFIG.appName[currentLang];
     document.getElementById("app-brand-name").innerText = window.APP_CONFIG.appName[currentLang];
     document.getElementById("app-tagline").innerText = window.APP_CONFIG.tagline[currentLang];
   }
-
   document.getElementById("lang-toggle-btn").innerText = texts.langBtnText;
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -153,193 +167,7 @@ function updateLanguageUI() {
   });
 }
 
-// --- Web Speech API (Speech-To-Text Engine) ---
-let recognition = null;
-let isListening = false;
-
-function initSpeechRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) return null;
-
-  const rec = new SpeechRecognition();
-  rec.continuous = true;
-  rec.interimResults = true;
-  return rec;
-}
-
-function toggleSpeechRecognition() {
-  if (!recognition) {
-    recognition = initSpeechRecognition();
-  }
-
-  if (!recognition) {
-    document.getElementById('speech-status').innerText = i18nDict[currentLang].speechError;
-    return;
-  }
-
-  const micBtn = document.getElementById('mic-btn');
-  const statusEl = document.getElementById('speech-status');
-  const textarea = document.getElementById('artisan-voice-input');
-
-  if (!isListening) {
-    recognition.lang = currentLang === 'kn' ? 'kn-IN' : 'en-US';
-
-    recognition.onstart = () => {
-      isListening = true;
-      if (micBtn) micBtn.classList.add('recording');
-      if (statusEl) statusEl.innerText = i18nDict[currentLang].listeningMsg;
-    };
-
-    recognition.onresult = (event) => {
-      let transcript = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      textarea.value = transcript;
-    };
-
-    recognition.onerror = (err) => {
-      console.error("Speech Error:", err);
-      if (statusEl) statusEl.innerText = i18nDict[currentLang].speechError;
-      stopListening();
-    };
-
-    recognition.onend = () => {
-      stopListening();
-    };
-
-    recognition.start();
-  } else {
-    recognition.stop();
-    stopListening();
-  }
-}
-
-function stopListening() {
-  isListening = false;
-  const micBtn = document.getElementById('mic-btn');
-  if (micBtn) micBtn.classList.remove('recording');
-  const statusEl = document.getElementById('speech-status');
-  if (statusEl) statusEl.innerText = '';
-}
-
-// Photo Handling
-function triggerPhotoUpload() {
-  document.getElementById('product-photo-input').click();
-}
-
-function handleImageSelected(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('image-preview').src = e.target.result;
-      document.getElementById('image-preview-container').style.display = 'block';
-      document.querySelector('.upload-box').style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-function resetPhoto() {
-  document.getElementById('product-photo-input').value = '';
-  document.getElementById('image-preview-container').style.display = 'none';
-  document.querySelector('.upload-box').style.display = 'flex';
-}
-
-// AI Auto-fill Action
-function runAIVisionListing() {
-  const btn = document.querySelector('.ai-action-btn');
-  const userSpeechText = document.getElementById('artisan-voice-input').value;
-
-  btn.innerText = i18nDict[currentLang].aiAnalyzing;
-
-  setTimeout(() => {
-    if (currentLang === 'kn') {
-      document.getElementById('res-title').value = userSpeechText ? userSpeechText.slice(0, 25) : "ಕಾಸುತಿ ಎಂಬ್ರಾಯ್ಡರಿ ಸೀರೆ";
-      document.getElementById('res-story').value = userSpeechText || "ಶುದ್ಧ ಹತ್ತಿ ದಾರದಿಂದ ತಯಾರಿಸಿದ ಸಾಂಪ್ರದಾಯಿಕ ಕಾಸುತಿ ಕರಕುಶಲ ವಸ್ತು.";
-      document.getElementById('res-material').value = "ಹತ್ತಿ ದಾರ (Cotton Thread)";
-      document.getElementById('res-dimensions').value = "6.3 ಮೀಟರ್";
-      document.getElementById('res-weight').value = "500 ಗ್ರಾಂ";
-      document.getElementById('res-price').value = "2500";
-      document.getElementById('res-quantity').value = "2";
-      document.getElementById('res-address').value = "ಕುಂದಾಪುರ, ಉಡುಪಿ ಜಿಲ್ಲೆ, ಕರ್ನಾಟಕ - 576201";
-    } else {
-      document.getElementById('res-title').value = userSpeechText ? userSpeechText.slice(0, 25) : "Kasuti Embroidery Saree";
-      document.getElementById('res-story').value = userSpeechText || "Authentic GI-tagged Kasuti hand-stitched craft from coastal Karnataka.";
-      document.getElementById('res-material').value = "Pure Cotton Thread & Silk";
-      document.getElementById('res-dimensions').value = "6.3 Meters";
-      document.getElementById('res-weight').value = "500g";
-      document.getElementById('res-price').value = "2500";
-      document.getElementById('res-quantity').value = "2";
-      document.getElementById('res-address').value = "Kundapura, Udupi Dist, Karnataka - 576201";
-    }
-
-    btn.innerText = i18nDict[currentLang].aiGenerateBtn;
-  }, 1000);
-}
-
-// Publish Product Payload & Shop State Update
-function publishProduct() {
-  const productData = {
-    name: document.getElementById('res-title').value,
-    description: document.getElementById('res-story').value,
-    price: document.getElementById('res-price').value,
-    quantity: document.getElementById('res-quantity').value,
-    material: document.getElementById('res-material').value,
-    dimensions: document.getElementById('res-dimensions').value,
-    weight: document.getElementById('res-weight').value,
-    sellerAddress: document.getElementById('res-address').value,
-    photoSrc: document.getElementById('image-preview').src || null
-  };
-
-  if (productData.name && productData.price) {
-    myListings.push(productData);
-    renderShopListings();
-    alert(i18nDict[currentLang].publishSuccess);
-
-    // Reset fields & navigate to shop
-    resetPhoto();
-    document.getElementById('artisan-voice-input').value = '';
-    
-    // Clear dynamic inputs
-    document.getElementById('res-title').value = '';
-    document.getElementById('res-story').value = '';
-    document.getElementById('res-price').value = '';
-    document.getElementById('res-quantity').value = '1';
-    document.getElementById('res-material').value = '';
-    document.getElementById('res-dimensions').value = '';
-    document.getElementById('res-weight').value = '';
-    document.getElementById('res-address').value = '';
-
-    switchScreen('screen-shop');
-  }
-}
-
-// Render Published Products in "My Shop"
-function renderShopListings() {
-  const container = document.getElementById('shop-products-list');
-  const countEl = document.getElementById('stat-active-count');
-
-  if (myListings.length > 0) {
-    container.innerHTML = '';
-    myListings.forEach((item) => {
-      const card = document.createElement('div');
-      card.className = 'mini-product-card';
-      card.innerHTML = `
-        <span>🧶 ${item.name}</span>
-        <span class="status-active">₹ ${item.price}</span>
-      `;
-      container.appendChild(card);
-    });
-    if (countEl) countEl.innerText = myListings.length;
-  }
-}
-
-let activeListingMode = null; // 'manual' or 'ai'
-let currentManualStep = 1;
-const totalManualSteps = 3;
-
+// Mode Selector
 function selectListingMode(mode) {
   activeListingMode = mode;
   document.getElementById('listing-mode-chooser').style.display = 'none';
@@ -369,13 +197,66 @@ function handleBackAction() {
   }
 }
 
+// Dynamic Photo Upload & Validation (Max 5 photos, Image format enforcement)
+function triggerPhotoUpload() {
+  let fileInput = activeListingMode === 'manual' ? document.getElementById('manual-photo-input') : document.getElementById('ai-photo-input');
+  if (fileInput) fileInput.click();
+}
+
+function handlePhotoUpload(event, mode) {
+  const files = Array.from(event.target.files);
+  let targetBuffer = mode === 'manual' ? manualPhotos : aiPhotos;
+  let galleryContainer = document.getElementById(`${mode}-gallery-preview`);
+
+  // Enforce image format & max 5 photos
+  const validImageFiles = files.filter(f => f.type.startsWith('image/'));
+  
+  if (targetBuffer.length + validImageFiles.length > 5) {
+    alert(i18nDict[currentLang].maxPhotoError);
+  }
+
+  validImageFiles.slice(0, 5 - targetBuffer.length).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      targetBuffer.push(e.target.result);
+      renderGalleryPreviews(mode);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderGalleryPreviews(mode) {
+  let targetBuffer = mode === 'manual' ? manualPhotos : aiPhotos;
+  let galleryContainer = document.getElementById(`${mode}-gallery-preview`);
+  galleryContainer.innerHTML = '';
+
+  targetBuffer.forEach((src, index) => {
+    const imgWrapper = document.createElement('div');
+    imgWrapper.className = 'thumb-wrapper';
+    imgWrapper.innerHTML = `
+      <img src="${src}" alt="Photo ${index + 1}">
+      <button type="button" class="thumb-remove" onclick="removePhoto(${index}, '${mode}')">×</button>
+    `;
+    galleryContainer.appendChild(imgWrapper);
+  });
+}
+
+function removePhoto(index, mode) {
+  if (mode === 'manual') {
+    manualPhotos.splice(index, 1);
+  } else {
+    aiPhotos.splice(index, 1);
+  }
+  renderGalleryPreviews(mode);
+}
+
 // Manual Wizard Navigation
 function changeWizardStep(direction) {
   if (direction === 1 && !validateCurrentManualStep()) return;
-  
+
   currentManualStep += direction;
   if (currentManualStep > totalManualSteps) {
-    publishManualProduct();
+    openFinalPreview('manual');
     return;
   }
   if (currentManualStep < 1) currentManualStep = 1;
@@ -393,7 +274,7 @@ function updateManualWizardSteps() {
   stepIndicator.innerText = currentLang === 'kn' ? `ಹಂತ ${currentManualStep} / ${totalManualSteps}` : `Step ${currentManualStep} of ${totalManualSteps}`;
 
   document.getElementById('wizard-prev-btn').style.display = currentManualStep > 1 ? 'inline-block' : 'none';
-  document.getElementById('wizard-next-btn').innerText = currentManualStep === totalManualSteps ? (i18nDict[currentLang].publishBtn || "Publish") : (i18nDict[currentLang].btnNext || "Next");
+  document.getElementById('wizard-next-btn').innerText = currentManualStep === totalManualSteps ? i18nDict[currentLang].btnPreview : i18nDict[currentLang].btnNext;
 }
 
 function validateCurrentManualStep() {
@@ -408,32 +289,7 @@ function validateCurrentManualStep() {
   return true;
 }
 
-// Manual Photo Handler
-function handleManualImageSelected(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('manual-img-preview').src = e.target.result;
-      document.getElementById('manual-img-preview-container').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-function handleAiImageSelected(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('ai-img-preview').src = e.target.result;
-      document.getElementById('ai-img-preview-container').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-// AI Paragraph / Speech to Wizard Review Stage
+// AI Voice Processing
 function processAiExtraction() {
   const btn = document.querySelector('.ai-action-btn');
   const userText = document.getElementById('artisan-voice-input').value;
@@ -441,7 +297,6 @@ function processAiExtraction() {
   btn.innerText = i18nDict[currentLang].aiAnalyzing;
 
   setTimeout(() => {
-    // Hide input stage, show wizard confirmation review stage
     document.getElementById('ai-input-stage').style.display = 'none';
     document.getElementById('ai-review-stage').style.display = 'block';
 
@@ -453,7 +308,7 @@ function processAiExtraction() {
       document.getElementById('res-weight').value = "500 ಗ್ರಾಂ";
       document.getElementById('res-price').value = "2500";
       document.getElementById('res-quantity').value = "1";
-      document.getElementById('res-address').value = "ಕುಂದಾಪುರ, ಉಡುಪಿ ಜಿಲ್ಲೆ, ಕರ್ನಾಟಕ - 576201";
+      document.getElementById('res-address').value = "ಕುಂದಾಪುರ, ಉಡುಪಿ ಜಿಲ್ಲೆ - 576201";
     } else {
       document.getElementById('res-title').value = userText ? userText.slice(0, 30) : "Kasuti Embroidery Saree";
       document.getElementById('res-story').value = userText || "Authentic GI-tagged Kasuti hand-stitched craft from coastal Karnataka.";
@@ -462,55 +317,142 @@ function processAiExtraction() {
       document.getElementById('res-weight').value = "500g";
       document.getElementById('res-price').value = "2500";
       document.getElementById('res-quantity').value = "1";
-      document.getElementById('res-address').value = "Kundapura, Udupi Dist, Karnataka - 576201";
+      document.getElementById('res-address').value = "Kundapura, Udupi Dist - 576201";
     }
 
     btn.innerText = i18nDict[currentLang].aiGenerateBtn;
   }, 1000);
 }
 
-function publishManualProduct() {
-  const productData = {
-    name: document.getElementById('manual-title').value,
-    description: document.getElementById('manual-story').value,
-    price: document.getElementById('manual-price').value,
-    quantity: document.getElementById('manual-quantity').value,
-    material: document.getElementById('manual-material').value,
-    dimensions: document.getElementById('manual-dimensions').value,
-    weight: document.getElementById('manual-weight').value,
-    sellerAddress: document.getElementById('manual-address').value,
-    photoSrc: document.getElementById('manual-img-preview').src || null
-  };
+// Final Confirmation Preview Modal
+function openFinalPreview(sourceMode) {
+  if (sourceMode === 'manual') {
+    pendingPublishData = {
+      name: document.getElementById('manual-title').value,
+      description: document.getElementById('manual-story').value,
+      price: document.getElementById('manual-price').value,
+      quantity: document.getElementById('manual-quantity').value,
+      material: document.getElementById('manual-material').value,
+      dimensions: document.getElementById('manual-dimensions').value,
+      weight: document.getElementById('manual-weight').value,
+      sellerAddress: document.getElementById('manual-address').value,
+      photos: [...manualPhotos]
+    };
+  } else {
+    pendingPublishData = {
+      name: document.getElementById('res-title').value,
+      description: document.getElementById('res-story').value,
+      price: document.getElementById('res-price').value,
+      quantity: document.getElementById('res-quantity').value,
+      material: document.getElementById('res-material').value,
+      dimensions: document.getElementById('res-dimensions').value,
+      weight: document.getElementById('res-weight').value,
+      sellerAddress: document.getElementById('res-address').value,
+      photos: [...aiPhotos]
+    };
+  }
 
-  myListings.push(productData);
-  renderShopListings();
-  alert(i18nDict[currentLang].publishSuccess);
-  resetAndGoToShop();
+  // Populate Preview Modal UI
+  const galleryEl = document.getElementById('preview-photos-gallery');
+  galleryEl.innerHTML = pendingPublishData.photos.map(p => `<img src="${p}" style="height:60px; border-radius:6px;">`).join('') || '📷 No photos attached';
+
+  const detailsEl = document.getElementById('preview-details-list');
+  detailsEl.innerHTML = `
+    <p><strong>${i18nDict[currentLang].fieldTitle}</strong> ${pendingPublishData.name}</p>
+    <p><strong>${i18nDict[currentLang].fieldPrice}</strong> ₹ ${pendingPublishData.price}</p>
+    <p><strong>${i18nDict[currentLang].fieldQuantity}</strong> ${pendingPublishData.quantity}</p>
+    <p><strong>${i18nDict[currentLang].fieldMaterial}</strong> ${pendingPublishData.material || '-'}</p>
+    <p><strong>${i18nDict[currentLang].fieldDimensions}</strong> ${pendingPublishData.dimensions || '-'}</p>
+    <p><strong>${i18nDict[currentLang].fieldWeight}</strong> ${pendingPublishData.weight || '-'}</p>
+    <p><strong>${i18nDict[currentLang].fieldStory}</strong> ${pendingPublishData.description || '-'}</p>
+    <p><strong>${i18nDict[currentLang].fieldAddress}</strong> ${pendingPublishData.sellerAddress || '-'}</p>
+  `;
+
+  document.getElementById('preview-modal').style.display = 'flex';
 }
 
-function publishProductFromAi() {
-  const productData = {
-    name: document.getElementById('res-title').value,
-    description: document.getElementById('res-story').value,
-    price: document.getElementById('res-price').value,
-    quantity: document.getElementById('res-quantity').value,
-    material: document.getElementById('res-material').value,
-    dimensions: document.getElementById('res-dimensions').value,
-    weight: document.getElementById('res-weight').value,
-    sellerAddress: document.getElementById('res-address').value,
-    photoSrc: document.getElementById('ai-img-preview').src || null
-  };
-
-  myListings.push(productData);
-  renderShopListings();
-  alert(i18nDict[currentLang].publishSuccess);
-  resetAndGoToShop();
+function closePreviewModal() {
+  document.getElementById('preview-modal').style.display = 'none';
 }
 
-function resetAndGoToShop() {
-  document.getElementById('manual-wizard-container').style.display = 'none';
-  document.getElementById('ai-wizard-container').style.display = 'none';
-  document.getElementById('listing-mode-chooser').style.display = 'block';
-  activeListingMode = null;
-  switchScreen('screen-shop');
+function confirmAndPublish() {
+  if (pendingPublishData) {
+    myListings.push({ ...pendingPublishData, id: Date.now() });
+    renderShopListings();
+    alert(i18nDict[currentLang].publishSuccess);
+    closePreviewModal();
+
+    // Reset Buffers
+    manualPhotos = [];
+    aiPhotos = [];
+    document.getElementById('manual-wizard-container').style.display = 'none';
+    document.getElementById('ai-wizard-container').style.display = 'none';
+    document.getElementById('listing-mode-chooser').style.display = 'block';
+    activeListingMode = null;
+
+    switchScreen('screen-shop');
+  }
+}
+
+// My Shop Expandable Product Cards & Edit Support
+function renderShopListings() {
+  const container = document.getElementById('shop-products-list');
+  const countEl = document.getElementById('stat-active-count');
+
+  if (myListings.length > 0) {
+    container.innerHTML = '';
+    myListings.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'shop-expandable-card';
+      card.innerHTML = `
+        <div class="card-summary" onclick="toggleShopCardDetails(${index})">
+          <div class="summary-left">
+            <span class="product-icon">🧶</span>
+            <strong>${item.name}</strong>
+          </div>
+          <span class="status-active">₹ ${item.price} ▾</span>
+        </div>
+
+        <div id="shop-card-detail-${index}" class="card-details-expanded" style="display:none;">
+          <div class="detail-gallery">
+            ${(item.photos || []).map(p => `<img src="${p}">`).join('')}
+          </div>
+          <div class="edit-fields-group">
+            <label>${i18nDict[currentLang].fieldTitle}</label>
+            <input type="text" id="edit-title-${index}" value="${item.name}">
+            
+            <label>${i18nDict[currentLang].fieldPrice}</label>
+            <input type="number" id="edit-price-${index}" value="${item.price}">
+
+            <label>${i18nDict[currentLang].fieldMaterial}</label>
+            <input type="text" id="edit-material-${index}" value="${item.material || ''}">
+
+            <label>${i18nDict[currentLang].fieldStory}</label>
+            <textarea id="edit-desc-${index}" rows="2">${item.description || ''}</textarea>
+
+            <button type="button" class="publish-btn" style="margin-top:0.75rem;" onclick="saveShopItemEdits(${index})">
+              ${i18nDict[currentLang].editSave}
+            </button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+    if (countEl) countEl.innerText = myListings.length;
+  }
+}
+
+function toggleShopCardDetails(index) {
+  const detailEl = document.getElementById(`shop-card-detail-${index}`);
+  detailEl.style.display = detailEl.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveShopItemEdits(index) {
+  myListings[index].name = document.getElementById(`edit-title-${index}`).value;
+  myListings[index].price = document.getElementById(`edit-price-${index}`).value;
+  myListings[index].material = document.getElementById(`edit-material-${index}`).value;
+  myListings[index].description = document.getElementById(`edit-desc-${index}`).value;
+
+  renderShopListings();
+  alert(currentLang === 'kn' ? "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ!" : "Changes saved successfully!");
 }
