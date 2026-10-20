@@ -1,7 +1,29 @@
-// js/app.js - Complete PWA Logic & Handlers
+// js/app.js - Complete PWA Logic & Handlers with LocalStorage Persistence
 
 let currentLang = 'kn';
-let myListings = [];
+
+// --- LocalStorage Persistence Integration ---
+const STORAGE_KEY = 'kalasetu_artisan_listings';
+
+function loadListingsFromStorage() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    console.error("Failed to load listings from localStorage:", e);
+    return [];
+  }
+}
+
+function saveListingsToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(myListings));
+  } catch (e) {
+    console.error("Failed to save listings to localStorage:", e);
+  }
+}
+
+let myListings = loadListingsFromStorage();
 let activeListingMode = null; // 'manual' or 'ai'
 let currentManualStep = 1;
 const totalManualSteps = 3;
@@ -134,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     root.style.setProperty('--font-main', window.APP_CONFIG.fonts.primaryFamily);
   }
   updateLanguageUI();
+  renderShopListings(); // Render stored items on startup
 });
 
 function switchScreen(screenId) {
@@ -206,7 +229,6 @@ function triggerPhotoUpload() {
 function handlePhotoUpload(event, mode) {
   const files = Array.from(event.target.files);
   let targetBuffer = mode === 'manual' ? manualPhotos : aiPhotos;
-  let galleryContainer = document.getElementById(`${mode}-gallery-preview`);
 
   // Enforce image format & max 5 photos
   const validImageFiles = files.filter(f => f.type.startsWith('image/'));
@@ -228,6 +250,8 @@ function handlePhotoUpload(event, mode) {
 function renderGalleryPreviews(mode) {
   let targetBuffer = mode === 'manual' ? manualPhotos : aiPhotos;
   let galleryContainer = document.getElementById(`${mode}-gallery-preview`);
+  if (!galleryContainer) return;
+  
   galleryContainer.innerHTML = '';
 
   targetBuffer.forEach((src, index) => {
@@ -325,6 +349,22 @@ function processAiExtraction() {
 }
 
 // Final Confirmation Preview Modal
+// --- Lightbox Image Expand Logic ---
+function openLightbox(src) {
+  const modal = document.getElementById('image-lightbox-modal');
+  const lightboxImg = document.getElementById('lightbox-img');
+  if (modal && lightboxImg) {
+    lightboxImg.src = src;
+    modal.style.display = 'flex';
+  }
+}
+
+function closeLightbox() {
+  const modal = document.getElementById('image-lightbox-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+// --- Final Review Modal UI (Polished Grid & Cards) ---
 function openFinalPreview(sourceMode) {
   if (sourceMode === 'manual') {
     pendingPublishData = {
@@ -352,20 +392,56 @@ function openFinalPreview(sourceMode) {
     };
   }
 
-  // Populate Preview Modal UI
+  // Render Image Thumbnails with Uniform 1:1 Aspect Ratio & Click-to-Expand
   const galleryEl = document.getElementById('preview-photos-gallery');
-  galleryEl.innerHTML = pendingPublishData.photos.map(p => `<img src="${p}" style="height:60px; border-radius:6px;">`).join('') || '📷 No photos attached';
+  if (pendingPublishData.photos && pendingPublishData.photos.length > 0) {
+    galleryEl.innerHTML = pendingPublishData.photos.map((src, idx) => `
+      <div class="preview-thumb-box" onclick="openLightbox('${src}')" title="Click to view full size">
+        <img src="${src}" alt="Photo ${idx + 1}">
+        <span class="zoom-badge">🔍</span>
+      </div>
+    `).join('');
+  } else {
+    galleryEl.innerHTML = `<div class="no-photo-badge">📷 No photos uploaded</div>`;
+  }
 
+  // Render High-Quality Card Structure
   const detailsEl = document.getElementById('preview-details-list');
   detailsEl.innerHTML = `
-    <p><strong>${i18nDict[currentLang].fieldTitle}</strong> ${pendingPublishData.name}</p>
-    <p><strong>${i18nDict[currentLang].fieldPrice}</strong> ₹ ${pendingPublishData.price}</p>
-    <p><strong>${i18nDict[currentLang].fieldQuantity}</strong> ${pendingPublishData.quantity}</p>
-    <p><strong>${i18nDict[currentLang].fieldMaterial}</strong> ${pendingPublishData.material || '-'}</p>
-    <p><strong>${i18nDict[currentLang].fieldDimensions}</strong> ${pendingPublishData.dimensions || '-'}</p>
-    <p><strong>${i18nDict[currentLang].fieldWeight}</strong> ${pendingPublishData.weight || '-'}</p>
-    <p><strong>${i18nDict[currentLang].fieldStory}</strong> ${pendingPublishData.description || '-'}</p>
-    <p><strong>${i18nDict[currentLang].fieldAddress}</strong> ${pendingPublishData.sellerAddress || '-'}</p>
+    <!-- Main Title & Price Header Card -->
+    <div class="review-header-card">
+      <h3 class="review-prod-title">${pendingPublishData.name || 'Untitled Craft'}</h3>
+      <div class="review-price-tag">₹ ${pendingPublishData.price || '0'} <span class="qty-badge">Qty: ${pendingPublishData.quantity || 1}</span></div>
+    </div>
+
+    <!-- Specifications Grid -->
+    <div class="review-specs-grid">
+      <div class="spec-tile">
+        <span class="spec-label">${i18nDict[currentLang].fieldMaterial || 'Material'}</span>
+        <strong class="spec-value">${pendingPublishData.material || 'N/A'}</strong>
+      </div>
+      <div class="spec-tile">
+        <span class="spec-label">${i18nDict[currentLang].fieldDimensions || 'Dimensions'}</span>
+        <strong class="spec-value">${pendingPublishData.dimensions || 'N/A'}</strong>
+      </div>
+      <div class="spec-tile">
+        <span class="spec-label">${i18nDict[currentLang].fieldWeight || 'Weight'}</span>
+        <strong class="spec-value">${pendingPublishData.weight || 'N/A'}</strong>
+      </div>
+    </div>
+
+    <!-- Description Block -->
+    <div class="review-section-box">
+      <span class="section-label">📜 ${i18nDict[currentLang].fieldStory || 'Brief Description'}</span>
+      <p class="section-text">${pendingPublishData.description || 'No description provided.'}</p>
+    </div>
+
+    <!-- Address Block -->
+    <div class="review-section-box">
+      <span class="section-label">📍 ${i18nDict[currentLang].fieldAddress || 'Seller Address'}</span>
+      <p class="section-text">${pendingPublishData.sellerAddress || 'Not specified'}</p>
+      <small class="escrow-privacy-pill">🔒 Platform Escrow Delivery Enabled</small>
+    </div>
   `;
 
   document.getElementById('preview-modal').style.display = 'flex';
@@ -378,13 +454,20 @@ function closePreviewModal() {
 function confirmAndPublish() {
   if (pendingPublishData) {
     myListings.push({ ...pendingPublishData, id: Date.now() });
+    
+    // Save state to LocalStorage
+    saveListingsToStorage();
+
     renderShopListings();
     alert(i18nDict[currentLang].publishSuccess);
     closePreviewModal();
 
-    // Reset Buffers
+    // Reset Buffers & Gallery Previews
     manualPhotos = [];
     aiPhotos = [];
+    renderGalleryPreviews('manual');
+    renderGalleryPreviews('ai');
+
     document.getElementById('manual-wizard-container').style.display = 'none';
     document.getElementById('ai-wizard-container').style.display = 'none';
     document.getElementById('listing-mode-chooser').style.display = 'block';
@@ -398,6 +481,8 @@ function confirmAndPublish() {
 function renderShopListings() {
   const container = document.getElementById('shop-products-list');
   const countEl = document.getElementById('stat-active-count');
+
+  if (!container) return;
 
   if (myListings.length > 0) {
     container.innerHTML = '';
@@ -439,12 +524,17 @@ function renderShopListings() {
       container.appendChild(card);
     });
     if (countEl) countEl.innerText = myListings.length;
+  } else {
+    container.innerHTML = `<div id="no-products-msg" class="empty-state"><p data-i18n="noProducts">${i18nDict[currentLang].noProducts}</p></div>`;
+    if (countEl) countEl.innerText = 0;
   }
 }
 
 function toggleShopCardDetails(index) {
   const detailEl = document.getElementById(`shop-card-detail-${index}`);
-  detailEl.style.display = detailEl.style.display === 'none' ? 'block' : 'none';
+  if (detailEl) {
+    detailEl.style.display = detailEl.style.display === 'none' ? 'block' : 'none';
+  }
 }
 
 function saveShopItemEdits(index) {
@@ -452,6 +542,9 @@ function saveShopItemEdits(index) {
   myListings[index].price = document.getElementById(`edit-price-${index}`).value;
   myListings[index].material = document.getElementById(`edit-material-${index}`).value;
   myListings[index].description = document.getElementById(`edit-desc-${index}`).value;
+
+  // Sync edits to LocalStorage
+  saveListingsToStorage();
 
   renderShopListings();
   alert(currentLang === 'kn' ? "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ!" : "Changes saved successfully!");

@@ -506,38 +506,48 @@ textarea, input[type="text"] {
   margin-bottom: 0.5rem;
 }
 
+/* --- Form Upload Gallery Previews Fix --- */
 .photo-gallery-preview {
   display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
+  flex-wrap: wrap; /* Prevents horizontal stretching off screen */
+  gap: 0.6rem;
   padding: 0.5rem 0;
+  max-width: 100%;
 }
 
 .thumb-wrapper {
   position: relative;
+  width: 70px;  /* Strict fixed thumbnail box */
+  height: 70px;
   flex-shrink: 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
 }
 
 .thumb-wrapper img {
-  width: 65px;
-  height: 65px;
-  object-fit: cover;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Crops neatly inside 70x70 thumbnail */
+  display: block;
 }
 
 .thumb-remove {
   position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #ef4444;
+  top: 2px;
+  right: 2px;
+  background: rgba(220, 38, 38, 0.9);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: bold;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Modal Overlay & Card */
@@ -627,4 +637,174 @@ textarea, input[type="text"] {
 }
   font-weight: 600;
   cursor: pointer;
+}
+
+/* --- Uniform Square Thumbnails for Previews --- */
+.photo-gallery-preview {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.preview-thumb-box {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease;
+}
+
+.preview-thumb-box:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+}
+
+.preview-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Prevents stretching and enforces square aspect ratio */
+}
+
+.zoom-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(0,0,0,0.6);
+  font-size: 10px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  color: white;
+}
+
+/* --- Fullscreen Lightbox Modal --- */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.lightbox-content {
+  max-width: 90%;
+  max-height: 85vh;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+/* --- Redesigned Final Review Modal UI --- */
+.review-header-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-left: 5px solid var(--color-primary);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.review-prod-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.review-price-tag {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.qty-badge {
+  font-size: 0.75rem;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  font-weight: 600;
+}
+
+.review-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.spec-tile {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+  text-align: center;
+}
+
+.spec-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spec-value {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  margin-top: 0.1rem;
+}
+
+.review-section-box {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: 0.75rem 1rem;
+  border-radius: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary-hover);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.section-text {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.35;
+}
+
+.escrow-privacy-pill {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--color-secondary);
+  font-weight: 600;
 }
