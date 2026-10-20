@@ -220,7 +220,7 @@ function handleBackAction() {
   }
 }
 
-// Dynamic Photo Upload & Validation (Max 5 photos, Image format enforcement)
+// Dynamic Photo Upload & Validation
 function triggerPhotoUpload() {
   let fileInput = activeListingMode === 'manual' ? document.getElementById('manual-photo-input') : document.getElementById('ai-photo-input');
   if (fileInput) fileInput.click();
@@ -230,7 +230,6 @@ function handlePhotoUpload(event, mode) {
   const files = Array.from(event.target.files);
   let targetBuffer = mode === 'manual' ? manualPhotos : aiPhotos;
 
-  // Enforce image format & max 5 photos
   const validImageFiles = files.filter(f => f.type.startsWith('image/'));
   
   if (targetBuffer.length + validImageFiles.length > 5) {
@@ -348,7 +347,6 @@ function processAiExtraction() {
   }, 1000);
 }
 
-// Final Confirmation Preview Modal
 // --- Lightbox Image Expand Logic ---
 function openLightbox(src) {
   const modal = document.getElementById('image-lightbox-modal');
@@ -364,7 +362,7 @@ function closeLightbox() {
   if (modal) modal.style.display = 'none';
 }
 
-// --- Final Review Modal UI (Polished Grid & Cards) ---
+// --- Final Review Modal UI ---
 function openFinalPreview(sourceMode) {
   if (sourceMode === 'manual') {
     pendingPublishData = {
@@ -392,7 +390,6 @@ function openFinalPreview(sourceMode) {
     };
   }
 
-  // Render Image Thumbnails with Uniform 1:1 Aspect Ratio & Click-to-Expand
   const galleryEl = document.getElementById('preview-photos-gallery');
   if (pendingPublishData.photos && pendingPublishData.photos.length > 0) {
     galleryEl.innerHTML = pendingPublishData.photos.map((src, idx) => `
@@ -405,16 +402,13 @@ function openFinalPreview(sourceMode) {
     galleryEl.innerHTML = `<div class="no-photo-badge">📷 No photos uploaded</div>`;
   }
 
-  // Render High-Quality Card Structure
   const detailsEl = document.getElementById('preview-details-list');
   detailsEl.innerHTML = `
-    <!-- Main Title & Price Header Card -->
     <div class="review-header-card">
       <h3 class="review-prod-title">${pendingPublishData.name || 'Untitled Craft'}</h3>
       <div class="review-price-tag">₹ ${pendingPublishData.price || '0'} <span class="qty-badge">Qty: ${pendingPublishData.quantity || 1}</span></div>
     </div>
 
-    <!-- Specifications Grid -->
     <div class="review-specs-grid">
       <div class="spec-tile">
         <span class="spec-label">${i18nDict[currentLang].fieldMaterial || 'Material'}</span>
@@ -430,13 +424,11 @@ function openFinalPreview(sourceMode) {
       </div>
     </div>
 
-    <!-- Description Block -->
     <div class="review-section-box">
       <span class="section-label">📜 ${i18nDict[currentLang].fieldStory || 'Brief Description'}</span>
       <p class="section-text">${pendingPublishData.description || 'No description provided.'}</p>
     </div>
 
-    <!-- Address Block -->
     <div class="review-section-box">
       <span class="section-label">📍 ${i18nDict[currentLang].fieldAddress || 'Seller Address'}</span>
       <p class="section-text">${pendingPublishData.sellerAddress || 'Not specified'}</p>
@@ -454,15 +446,12 @@ function closePreviewModal() {
 function confirmAndPublish() {
   if (pendingPublishData) {
     myListings.push({ ...pendingPublishData, id: Date.now() });
-    
-    // Save state to LocalStorage
     saveListingsToStorage();
 
     renderShopListings();
     alert(i18nDict[currentLang].publishSuccess);
     closePreviewModal();
 
-    // Reset Buffers & Gallery Previews
     manualPhotos = [];
     aiPhotos = [];
     renderGalleryPreviews('manual');
@@ -477,7 +466,7 @@ function confirmAndPublish() {
   }
 }
 
-// My Shop Expandable Product Cards & Edit Support
+// --- My Shop Expandable Product Cards & Edit Support ---
 function renderShopListings() {
   const container = document.getElementById('shop-products-list');
   const countEl = document.getElementById('stat-active-count');
@@ -489,6 +478,16 @@ function renderShopListings() {
     myListings.forEach((item, index) => {
       const card = document.createElement('div');
       card.className = 'shop-expandable-card';
+      
+      const photosHtml = (item.photos && item.photos.length > 0) 
+        ? item.photos.map(p => `
+            <div class="preview-thumb-box" onclick="event.stopPropagation(); openLightbox('${p}')" title="Click to view full size">
+              <img src="${p}" alt="Craft Photo">
+              <span class="zoom-badge">🔍</span>
+            </div>
+          `).join('')
+        : `<span style="font-size:0.8rem; color:var(--color-muted);">No photos attached</span>`;
+
       card.innerHTML = `
         <div class="card-summary" onclick="toggleShopCardDetails(${index})">
           <div class="summary-left">
@@ -499,8 +498,8 @@ function renderShopListings() {
         </div>
 
         <div id="shop-card-detail-${index}" class="card-details-expanded" style="display:none;">
-          <div class="detail-gallery">
-            ${(item.photos || []).map(p => `<img src="${p}">`).join('')}
+          <div class="detail-gallery photo-gallery-preview" style="margin-bottom: 1rem;">
+            ${photosHtml}
           </div>
           <div class="edit-fields-group">
             <label>${i18nDict[currentLang].fieldTitle}</label>
@@ -543,9 +542,7 @@ function saveShopItemEdits(index) {
   myListings[index].material = document.getElementById(`edit-material-${index}`).value;
   myListings[index].description = document.getElementById(`edit-desc-${index}`).value;
 
-  // Sync edits to LocalStorage
   saveListingsToStorage();
-
   renderShopListings();
   alert(currentLang === 'kn' ? "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ!" : "Changes saved successfully!");
-}
+}   
