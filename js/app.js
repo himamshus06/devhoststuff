@@ -312,10 +312,10 @@ function validateCurrentManualStep() {
   return true;
 }
 
-// AI Voice Processing
+// --- Intelligent AI/Paragraph Text Extractor ---
 function processAiExtraction() {
   const btn = document.querySelector('.ai-action-btn');
-  const userText = document.getElementById('artisan-voice-input').value;
+  const userText = document.getElementById('artisan-voice-input').value.trim();
 
   btn.innerText = i18nDict[currentLang].aiAnalyzing;
 
@@ -323,28 +323,68 @@ function processAiExtraction() {
     document.getElementById('ai-input-stage').style.display = 'none';
     document.getElementById('ai-review-stage').style.display = 'block';
 
-    if (currentLang === 'kn') {
-      document.getElementById('res-title').value = userText ? userText.slice(0, 30) : "ಕಾಸುತಿ ಎಂಬ್ರಾಯ್ಡರಿ ಸೀರೆ";
-      document.getElementById('res-story').value = userText || "ಶುದ್ಧ ಹತ್ತಿ ದಾರದಿಂದ ತಯಾರಿಸಿದ ಸಾಂಪ್ರದಾಯಿಕ ಕಾಸುತಿ ಕರಕುಶಲ ವಸ್ತು.";
-      document.getElementById('res-material').value = "ಹತ್ತಿ ದಾರ (Cotton)";
-      document.getElementById('res-dimensions').value = "6.3 ಮೀಟರ್";
-      document.getElementById('res-weight').value = "500 ಗ್ರಾಂ";
-      document.getElementById('res-price').value = "2500";
-      document.getElementById('res-quantity').value = "1";
-      document.getElementById('res-address').value = "ಕುಂದಾಪುರ, ಉಡುಪಿ ಜಿಲ್ಲೆ - 576201";
-    } else {
-      document.getElementById('res-title').value = userText ? userText.slice(0, 30) : "Kasuti Embroidery Saree";
-      document.getElementById('res-story').value = userText || "Authentic GI-tagged Kasuti hand-stitched craft from coastal Karnataka.";
-      document.getElementById('res-material').value = "Pure Cotton";
-      document.getElementById('res-dimensions').value = "6.3 Meters";
-      document.getElementById('res-weight').value = "500g";
-      document.getElementById('res-price').value = "2500";
-      document.getElementById('res-quantity').value = "1";
-      document.getElementById('res-address').value = "Kundapura, Udupi Dist - 576201";
+    // Default Fallbacks
+    let extractedTitle = currentLang === 'kn' ? "ಕರಾವಳಿ ಕರಕುಶಲ ವಸ್ತು" : "Coastal Handcrafted Item";
+    let extractedStory = userText || (currentLang === 'kn' ? "ಸಾಂಪ್ರದಾಯಿಕ ಶೈಲಿಯಲ್ಲಿ ಕೈಯಿಂದ ತಯಾರಿಸಿದ ಕರಕುಶಲ ಉತ್ಪನ್ನ." : "Authentic handcrafted craft item made using traditional art techniques.");
+    let extractedMaterial = currentLang === 'kn' ? "ಹತ್ತಿ / ನೈಸರ್ಗಿಕ ಎಳೆಗಳು" : "Pure Cotton & Natural Fibers";
+    let extractedDimensions = currentLang === 'kn' ? "ಪ್ರಮಾಣಿತ ಅಳತೆ" : "Standard Size";
+    let extractedWeight = "500g";
+    let extractedPrice = "1500";
+    let extractedQuantity = "1";
+    let extractedAddress = currentLang === 'kn' ? "ಉಡುಪಿ/ಮಂಗಳೂರು, ಕರ್ನಾಟಕ - 576201" : "Udupi/Mangaluru Dist, Karnataka - 576201";
+
+    if (userText) {
+      // 1. Smart Title Extraction (Take first 3-5 words or full text if short)
+      const words = userText.split(/\s+/);
+      extractedTitle = words.slice(0, 4).join(' ');
+
+      // 2. Extract Price (Looks for digits following ₹, Rs, or numbers near price context)
+      const priceMatch = userText.match(/(?:₹|rs\.?|ಬೆಲೆ|price)\s*[:\-]?\s*(\d+)/i) || userText.match(/\b(\d{3,5})\b/);
+      if (priceMatch) {
+        extractedPrice = priceMatch[1] || priceMatch[0];
+      }
+
+      // 3. Extract Quantity (Looks for numbers near qty or count words)
+      const qtyMatch = userText.match(/(?:qty|quantity|ಪ್ರಮಾಣ|qty\.?)\s*[:\-]?\s*(\d+)/i);
+      if (qtyMatch) {
+        extractedQuantity = qtyMatch[1];
+      }
+
+      // 4. Extract Dimensions / Length
+      const dimMatch = userText.match(/(\d+(?:\.\d+)?\s*(?:m|meter|cm|ft|ಮೀಟರ್|mtrs))/i);
+      if (dimMatch) {
+        extractedDimensions = dimMatch[1];
+      }
+
+      // 5. Extract Weight
+      const weightMatch = userText.match(/(\d+\s*(?:g|gm|kg|ಗ್ರಾಂ|ಕೆಜಿ))/i);
+      if (weightMatch) {
+        extractedWeight = weightMatch[1];
+      }
+
+      // 6. Keyword Material Detection
+      const lowerText = userText.toLowerCase();
+      if (lowerText.includes('silk') || lowerText.includes('ರೇಷ್ಮೆ')) {
+        extractedMaterial = currentLang === 'kn' ? 'ಶುದ್ಧ ರೇಷ್ಮೆ (Pure Silk)' : 'Pure Silk';
+      } else if (lowerText.includes('cotton') || lowerText.includes('ಹತ್ತಿ')) {
+        extractedMaterial = currentLang === 'kn' ? 'ಶುದ್ಧ ಹತ್ತಿ (Pure Cotton)' : 'Pure Cotton';
+      } else if (lowerText.includes('wood') || lowerText.includes('ಮರ')) {
+        extractedMaterial = currentLang === 'kn' ? 'ಸಾಗುವಾನಿ / ಮರ (Rosewood/Wood)' : 'Natural Wood';
+      }
     }
 
+    // Populate Fields with Extracted Smart Data
+    document.getElementById('res-title').value = extractedTitle;
+    document.getElementById('res-story').value = extractedStory;
+    document.getElementById('res-material').value = extractedMaterial;
+    document.getElementById('res-dimensions').value = extractedDimensions;
+    document.getElementById('res-weight').value = extractedWeight;
+    document.getElementById('res-price').value = extractedPrice;
+    document.getElementById('res-quantity').value = extractedQuantity;
+    document.getElementById('res-address').value = extractedAddress;
+
     btn.innerText = i18nDict[currentLang].aiGenerateBtn;
-  }, 1000);
+  }, 800);
 }
 
 // --- Lightbox Image Expand Logic ---
@@ -545,4 +585,22 @@ function saveShopItemEdits(index) {
   saveListingsToStorage();
   renderShopListings();
   alert(currentLang === 'kn' ? "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ!" : "Changes saved successfully!");
-}   
+}
+
+// Expose functions globally for HTML inline onclick handlers
+window.triggerPhotoUpload = triggerPhotoUpload;
+window.handlePhotoUpload = handlePhotoUpload;
+window.removePhoto = removePhoto;
+window.selectListingMode = selectListingMode;
+window.handleBackAction = handleBackAction;
+window.changeWizardStep = changeWizardStep;
+window.processAiExtraction = processAiExtraction;
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
+window.openFinalPreview = openFinalPreview;
+window.closePreviewModal = closePreviewModal;
+window.confirmAndPublish = confirmAndPublish;
+window.toggleShopCardDetails = toggleShopCardDetails;
+window.saveShopItemEdits = saveShopItemEdits;
+window.toggleLanguage = toggleLanguage;
+window.switchScreen = switchScreen;
