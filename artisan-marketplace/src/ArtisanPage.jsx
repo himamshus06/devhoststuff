@@ -1,0 +1,99 @@
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin, ShoppingBag } from "lucide-react";
+import "./index.css";
+
+const BASKET_IMAGE = "https://amritkalash.shop/wp-content/uploads/2024/03/Handmade_Bamboo_Storage_Basket_.png";
+
+const makers = {
+  "savitri-hegde": {
+    name: "Savitri Hegde", craft: "Kasuti Embroidery", location: "North Karnataka", initials: "SH",
+    story: "Explore textiles inspired by Karnataka's intricate Kasuti embroidery tradition, where every stitch reflects patience, precision, and generations of craft knowledge.",
+    products: [{ name: "Kasuti Embroidered Textile", price: 1450, image: "https://images.livemint.com/img/2021/08/06/1140x641/kasuti_1_1628239231619_1628239246101.jpg" }],
+  },
+  "basketry-artisan": {
+    name: "Local Basketry Artisan", craft: "Basketry", location: "Coastal Karnataka", initials: "BA",
+    story: "Discover useful, timeless woven pieces inspired by traditional basketry and the beauty of natural materials.",
+    products: [{ name: "Handwoven Bamboo Basket", price: 850, image: BASKET_IMAGE }],
+  },
+  "coastal-clay-artisan": {
+    name: "Coastal Clay Artisan", craft: "Terracotta", location: "Coastal Karnataka", initials: "CA",
+    story: "Earthy handmade vessels celebrate the natural textures of clay and the enduring tradition of pottery.",
+    products: [{ name: "Traditional Terracotta Pot", price: 690, image: "https://images.jdmagicbox.com/quickquotes/images_main/traditional-terracotta-planters-weather-resistant-outdoor-grade-nan-atth-e4zelpwl.jpg" }],
+  },
+  "coastal-craft-collective": {
+    name: "Coastal Craft Collective", craft: "Coastal Crafts", location: "Dakshina Kannada", initials: "CC",
+    story: "Handmade pieces inspired by coastal materials and resourceful craft traditions.",
+    products: [{ name: "Handcrafted Coconut Shell Bowl", price: 420, image: "https://m.media-amazon.com/images/I/71OdGBGU6OL._AC_UF350,350_QL80_.jpg" }],
+  },
+  "palm-leaf-artisan": {
+    name: "Local Palm Leaf Artisan", craft: "Palm Leaf Craft", location: "Coastal Karnataka", initials: "PA",
+    story: "Natural-textured woven pieces that bring a warm, handmade feel to everyday spaces.",
+    products: [{ name: "Palm Leaf Woven Mat", price: 580, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqy2PidbDvId627czlf_6MER8Lt3ABVYhMz6PCXg1LPBy23nzrhz3N8Z8&s=10" }],
+  },
+  "regional-folk-artist": {
+    name: "Regional Folk Artist", craft: "Folk Art", location: "Karnataka", initials: "FA",
+    story: "Explore artwork inspired by the colors and visual storytelling of Indian folk-art traditions.",
+    products: [{ name: "Hand-painted Folk Art", price: 1100, image: "https://cdn.vaaree.com/catalog/assets/ast_b6a04ebe32255b846c43c331edb48b59/variants/product_gallery_1200x1200_webp.webp" }],
+  },
+};
+
+const money = (amount) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
+
+export default function ArtisanPage() {
+  const { slug } = useParams();
+  const maker = makers[slug];
+
+  async function shareShop() {
+    const shareData = { title: `${maker.name} | KAYAKA.`, text: `Discover handmade ${maker.craft} from ${maker.location}.`, url: window.location.href };
+    try {
+      if (navigator.share) await navigator.share(shareData);
+      else { await navigator.clipboard.writeText(window.location.href); window.alert("Shop link copied!"); }
+    } catch (error) {
+      if (error?.name !== "AbortError") window.alert("Copy the shop URL from your browser to share it.");
+    }
+  }
+
+  if (!maker) return (
+    <main className="artisan-not-found">
+      <span className="eyebrow">MAKER NOT FOUND</span>
+      <h1>This artisan shop isn't available yet.</h1>
+      <Link className="button button-dark" to="/"><ArrowLeft size={17} /> Back to the marketplace</Link>
+    </main>
+  );
+
+  return (
+    <main className="artisan-page">
+      <header className="artisan-topbar">
+        <Link className="artisan-back" to="/"><ArrowLeft size={17} /> Back to KAYAKA.</Link>
+        <span className="eyebrow">A MAKER'S LITTLE CORNER</span>
+      </header>
+      <section className="artisan-profile">
+        <div className="artisan-avatar" aria-hidden="true">{maker.initials}</div>
+        <div className="artisan-profile-copy">
+          <span className="eyebrow">{maker.craft}</span>
+          <h1>{maker.name}</h1>
+          <p className="artisan-location"><MapPin size={15} /> {maker.location}</p>
+          <p className="artisan-story">{maker.story}</p>
+          <button className="button button-dark" onClick={shareShop}>Share this shop <ArrowUpRight size={17} /></button>
+        </div>
+      </section>
+      <section className="artisan-products">
+        <div className="section-heading">
+          <div><span className="eyebrow">MADE WITH CARE</span><h2>Shop this <em>maker.</em></h2><p>Explore pieces in this artisan's collection.</p></div>
+          <span className="result-count">{maker.products.length} {maker.products.length === 1 ? "piece" : "pieces"}</span>
+        </div>
+        <div className="product-grid artisan-product-grid">
+          {maker.products.map((product) => (
+            <article className="product-card" key={product.name}>
+              <div className="product-image-wrap"><img className="product-image" src={product.image} alt={product.name} loading="lazy" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.parentElement.classList.add("image-fallback"); }} /></div>
+              <div className="product-info"><div className="product-craft">{maker.craft}</div><h3 className="product-name">{product.name}</h3><div className="product-bottom"><span className="product-price">{money(product.price)}</span><ShoppingBag size={18} /></div></div>
+            </article>
+          ))}
+        </div>
+        <p className="artisan-demo-note">Prototype profile: artisan details and listings are sample data for demonstration.</p>
+        <Link className="button button-outline artisan-back-to-shop" to="/"><ArrowRight size={16} /> Explore the full collection</Link>
+      </section>
+      <footer className="artisan-footer"><span className="brand-word">KAYAKA<span>.</span></span><p>Made by hands, with heart.</p><Link to="/">Explore all crafts <ArrowUpRight size={15} /></Link></footer>
+    </main>
+  );
+}
