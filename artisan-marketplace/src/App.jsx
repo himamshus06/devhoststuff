@@ -17,12 +17,14 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { clearSession, getSellerProducts, getSession, saveOrders } from "./localStore";
 import "./index.css";
 
 const BASKET_IMAGE =
   "https://amritkalash.shop/wp-content/uploads/2024/03/Handmade_Bamboo_Storage_Basket_.png";
 
-const products = [
+const products = [];
+/* const archivedDemoProducts = [
   {
     id: 1, slug: "savitri-hegde",
     name: "Kasuti Embroidered Textile",
@@ -76,7 +78,7 @@ const products = [
     description: "Artwork inspired by the colors and visual storytelling of Indian folk art.",
     color: "#D6B6A4", tag: "Artist made",
   },
-];
+]; */
 
 const crafts = [
   "All crafts", "Kasuti Embroidery", "Basketry", "Terracotta",
@@ -270,8 +272,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [method, setMethod] = useState("upi");
-  const [upiId, setUpiId] = useState("demo@upi");
+  const [method, setMethod] = useState("razorpay");
   const [error, setError] = useState("");
   const [order, setOrder] = useState(null);
 
@@ -297,10 +298,6 @@ function CheckoutModal({ cart, onClose, onComplete }) {
       setError("Your cart is empty.");
       return;
     }
-    if (method === "upi" && !upiId.trim()) {
-      setError("Enter a demo UPI ID.");
-      return;
-    }
 
     // This only simulates payment. It does not contact a UPI provider.
     const newOrder = {
@@ -309,8 +306,8 @@ function CheckoutModal({ cart, onClose, onComplete }) {
       phone,
       address: address.trim(),
       paymentMethod: method,
-      paymentStatus: method === "upi"
-        ? "Demo payment successful"
+      paymentStatus: method === "razorpay"
+        ? "Razorpay test-mode simulation successful"
         : "Cash on delivery (demo)",
       subtotal,
       platformFee,
@@ -319,6 +316,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
         productId: product.id,
         name: product.name,
         artisan: product.artisan,
+        sellerId: product.sellerId || null,
         price: product.price,
         quantity,
       })),
@@ -386,9 +384,9 @@ function CheckoutModal({ cart, onClose, onComplete }) {
             <fieldset className="payment-options">
               <legend>Choose payment method</legend>
               <label className="payment-option">
-                <input type="radio" name="method" checked={method === "upi"}
-                  onChange={() => setMethod("upi")} />
-                <span><strong>UPI simulation</strong><small>No bank connection</small></span>
+                <input type="radio" name="method" checked={method === "razorpay"}
+                  onChange={() => setMethod("razorpay")} />
+                <span><strong>Razorpay test-mode simulation</strong><small>Official Checkout-style flow; no payment is processed</small></span>
               </label>
               <label className="payment-option">
                 <input type="radio" name="method" checked={method === "cod"}
@@ -396,13 +394,6 @@ function CheckoutModal({ cart, onClose, onComplete }) {
                 <span><strong>Cash on delivery</strong><small>Demo selection only</small></span>
               </label>
             </fieldset>
-            {method === "upi" && (
-              <label className="payment-input-label">
-                Demo UPI ID
-                <input value={upiId} onChange={(e) => setUpiId(e.target.value)}
-                  placeholder="demo@upi" />
-              </label>
-            )}
             {error && <p className="payment-error" role="alert">{error}</p>}
             <div className="checkout-actions">
               <button className="button button-outline" onClick={() => {
@@ -410,7 +401,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
                 setError("");
               }}>Back</button>
               <button className="button button-dark" onClick={placeDemoOrder}>
-                Simulate payment <Check size={17} />
+                Simulate Razorpay payment <Check size={17} />
               </button>
             </div>
             <p className="demo-disclaimer">
@@ -464,6 +455,8 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [orderConfirmation, setOrderConfirmation] = useState(null);
+  const [sellerProducts, setSellerProducts] = useState(getSellerProducts);
+  const [session, setSession] = useState(getSession);
 
   useEffect(() => {
     const refreshCart = () => setCart(readCart());
@@ -483,12 +476,18 @@ export default function App() {
     }
   }, [cart]);
 
+  useEffect(() => {
+    const refreshMarketplace = () => { setSellerProducts(getSellerProducts()); setSession(getSession()); };
+    window.addEventListener("storage", refreshMarketplace);
+    return () => window.removeEventListener("storage", refreshMarketplace);
+  }, []);
+
   const cartCount = Object.values(cart).reduce(
     (sum, entry) => sum + entry.quantity, 0
   );
 
   const filteredProducts = useMemo(() => {
-    let result = products.filter((product) => {
+    let result = [...sellerProducts, ...products].filter((product) => {
       const matchesCraft = activeCraft === "All crafts" ||
         product.craft === activeCraft;
       const query = searchTerm.trim().toLowerCase();
@@ -504,7 +503,9 @@ export default function App() {
     if (sortBy === "price-high") result.sort((a, b) => b.price - a.price);
     if (sortBy === "name") result.sort((a, b) => a.name.localeCompare(b.name));
     return result;
-  }, [activeCraft, searchTerm, sortBy, favorites, showFavoritesOnly]);
+  }, [activeCraft, searchTerm, sortBy, favorites, showFavoritesOnly, sellerProducts]);
+
+  const heroAccentImage = sellerProducts[0]?.image || BASKET_IMAGE;
 
   function goToShop() {
     setMobileMenuOpen(false);
@@ -548,8 +549,7 @@ export default function App() {
 
   function completeOrder(order) {
     try {
-      localStorage.setItem("kayaka-orders",
-        JSON.stringify([...readOrders(), order]));
+      saveOrders([...readOrders(), order]);
     } catch {
       // The on-screen confirmation still works.
     }
@@ -578,6 +578,14 @@ export default function App() {
             <a href="#our-story" onClick={() => setMobileMenuOpen(false)}>Our story</a>
           </nav>
           <div className="header-actions">
+            {session ? (
+              <>
+                <Link className="account-link" to={session.role === "seller" ? "/seller/dashboard" : "/"}>
+                  {session.role === "seller" ? "My shop" : `Hi, ${session.name.split(" ")[0]}`}
+                </Link>
+                <button className="header-icon" onClick={() => { clearSession(); setSession(null); }} aria-label="Sign out">Sign out</button>
+              </>
+            ) : <Link className="account-link" to="/login">Sign in</Link>}
             <button className={`header-icon ${showFavoritesOnly ? "active-icon" : ""}`}
               onClick={() => { setShowFavoritesOnly((value) => !value); goToShop(); }}
               aria-label="Toggle favorites">
@@ -619,7 +627,7 @@ export default function App() {
               <img src={BASKET_IMAGE} alt="Handwoven bamboo basket" />
             </div>
             <div className="hero-image-small">
-              <img src={products[0].image} alt="Traditional Kasuti embroidery" />
+              <img src={heroAccentImage} alt="Handmade marketplace preview" />
             </div>
             <div className="hero-stamp">
               <span>CRAFTED</span><span>WITH CARE</span><span className="stamp-symbol">ಕಾ</span>
