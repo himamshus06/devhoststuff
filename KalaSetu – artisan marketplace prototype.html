@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KalaSetu · ಕಲಾಸೇತು</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Serif+Kannada:wght@600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#f2f3ee;--surf:#fff;--ink:#1b2238;--mut:#5b6377;--line:#d9dccf;--red:#c4372b;--gold:#e0a526;--ind:#26346b;--on:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12162a;--surf:#1b2140;--ink:#eef0f8;--mut:#a3aac4;--line:#2f3860;--red:#ef6a5c;--ind:#9fb0ff;--on:#12162a}}
+:root[data-theme="dark"]{--bg:#12162a;--surf:#1b2140;--ink:#eef0f8;--mut:#a3aac4;--line:#2f3860;--red:#ef6a5c;--ind:#9fb0ff;--on:#12162a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Figtree','Noto Sans Kannada',sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surf);z-index:10}
+h1,h2,h3{font-family:'Young Serif','Noto Serif Kannada',serif;font-weight:400;line-height:1.15;margin:0 0 .4em}
+h1{font-size:clamp(1.9rem,6vw,3rem)}h2{font-size:1.5rem}h3{font-size:1.1rem}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surf);border-bottom:1px solid var(--line)}
+.bar{max-width:1000px;margin:auto;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.logo{font-family:'Young Serif','Noto Serif Kannada',serif;font-size:1.3rem;margin-right:auto;background:none;border:0;padding:0}
+.seg{display:flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:none;padding:6px 12px;font-size:.9rem}
+.seg button.on{background:var(--ink);color:var(--bg)}
+nav{max-width:1000px;margin:auto;padding:0 16px 8px;display:flex;gap:6px;overflow-x:auto}
+nav button{border:0;background:none;padding:8px 12px;border-bottom:3px solid transparent;white-space:nowrap}
+nav button.on{border-color:var(--red);font-weight:600}
+main{max-width:1000px;margin:auto;padding:20px 16px 60px}
+.band{height:16px;width:100%;display:block}
+.hero{padding:22px 0 8px}.hero p{max-width:52ch;color:var(--mut);font-size:1.05rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.chip{border:1.5px solid var(--line);background:var(--surf);border-radius:999px;padding:6px 14px}
+.chip.on{background:var(--ind);border-color:var(--ind);color:var(--on)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:6px;overflow:hidden;text-align:left;padding:0;display:block;width:100%}
+.card svg{display:block;width:100%;height:auto}
+.card .b{padding:12px}.card small{color:var(--mut)}
+.price{font-weight:600;font-size:1.1rem}
+.tag{display:inline-block;background:var(--gold);color:#1b2238;border-radius:4px;padding:2px 8px;font-size:.85rem;font-weight:600}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:720px){.cols{grid-template-columns:1fr}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:16px;margin:0 0 14px}
+.btn{background:var(--red);color:#fff;border:0;border-radius:6px;padding:12px 20px;font-weight:600;font-size:1rem}
+.btn.alt{background:none;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.big{width:100%;padding:16px;font-size:1.1rem}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.split{display:flex;height:22px;border-radius:4px;overflow:hidden;margin:8px 0}
+.split i{display:block}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;color:var(--mut)}
+.leg b{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:2px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input,select,textarea{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:6px;background:var(--surf)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.big-in{font-size:1.2rem}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:6px;z-index:20;display:none}
+.steps{display:flex;gap:6px;margin:10px 0}.steps span{flex:1;padding:6px;text-align:center;border-radius:4px;background:var(--line);font-size:.85rem}.steps span.on{background:var(--ind);color:var(--on)}
+.mic{width:auto;padding:10px 14px}
+.qr{background:#fff;padding:8px;display:inline-block;border-radius:4px}
+.stat{font-family:'Young Serif',serif;font-size:1.8rem}
+.muted{color:var(--mut)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="bar">
+  <button class="logo" data-a="go" data-v="home">KalaSetu · ಕಲಾಸೇತು</button>
+  <div class="seg" role="group" aria-label="Role"><button data-a="mode" data-m="buyer" id="mb"></button><button data-a="mode" data-m="artisan" id="ma"></button></div>
+  <div class="seg" role="group" aria-label="Language"><button data-a="lang" data-l="en" id="le">EN</button><button data-a="lang" data-l="kn" id="lk">ಕನ್ನಡ</button></div>
+ </div>
+ <nav id="nav"></nav>
+</header>
+<svg class="band" aria-hidden="true"><defs><pattern id="st" width="48" height="16" patternUnits="userSpaceOnUse"><path d="M3 3l10 10M13 3L3 13" stroke="#c4372b" stroke-width="2.2" fill="none"/><path d="M19 3l10 10M29 3L19 13" stroke="#e0a526" stroke-width="2.2" fill="none"/><path d="M35 3l10 10M45 3L35 13" stroke="#26346b" stroke-width="2.2" fill="none"/></pattern></defs><rect width="100%" height="16" fill="url(#st)"/></svg>
+<main id="app"></main>
+<div id="toast" role="status"></div>
+<script>
+const T={
+shop:['Shop','ಅಂಗಡಿ'],cart:['Cart','ಬುಟ್ಟಿ'],orders:['Orders','ಆರ್ಡರ್‌ಗಳು'],add:['Add product','ಉತ್ಪನ್ನ ಸೇರಿಸಿ'],mys:['My shop','ನನ್ನ ಅಂಗಡಿ'],
+buyer:['Buyer','ಖರೀದಿದಾರ'],artisan:['Artisan','ಕುಶಲಕರ್ಮಿ'],all:['All','ಎಲ್ಲಾ'],addc:['Add to cart','ಬುಟ್ಟಿಗೆ ಸೇರಿಸಿ'],
+story:['Craft story','ಕರಕುಶಲ ಕಥೆ'],why:['Why this price','ಈ ಬೆಲೆ ಏಕೆ'],mat:['Materials','ಸಾಮಗ್ರಿ'],lab:['Artisan’s pay','ಕುಶಲಕರ್ಮಿಯ ಶ್ರಮ'],fee:['Platform','ವೇದಿಕೆ'],
+hours:['Hours','ಗಂಟೆಗಳು'],wage:['Pay per hour (₹)','ಗಂಟೆಗೆ ವೇತನ (₹)'],matc:['Material cost (₹)','ಸಾಮಗ್ರಿ ವೆಚ್ಚ (₹)'],craft:['Craft','ಕರಕುಶಲ'],
+name:['Product name','ಉತ್ಪನ್ನದ ಹೆಸರು'],photo:['Take or choose photo','ಫೋಟೋ ತೆಗೆಯಿರಿ'],speak:['Speak','ಮಾತನಾಡಿ'],notes:['Tell us about it','ಇದರ ಬಗ್ಗೆ ಹೇಳಿ'],
+gen:['Make my listing','ಪಟ್ಟಿ ತಯಾರಿಸಿ'],pub:['Publish','ಪ್ರಕಟಿಸಿ'],pay:['Pay','ಪಾವತಿಸಿ'],addr:['Delivery address','ವಿಳಾಸ'],
+acc:['Accept','ಒಪ್ಪಿಕೊಳ್ಳಿ'],shp:['Shipped','ಕಳುಹಿಸಲಾಗಿದೆ'],del:['Delivered','ತಲುಪಿದೆ'],play:['Hear the artisan','ಕುಶಲಕರ್ಮಿಯ ಮಾತು ಕೇಳಿ'],
+prov:['Provenance','ಮೂಲ ಪ್ರಮಾಣ'],suggest:['Suggested price','ಸೂಚಿತ ಬೆಲೆ'],empty:['Nothing here yet.','ಇಲ್ಲಿ ಇನ್ನೂ ಏನೂ ಇಲ್ಲ.']};
+const t=k=>T[k][S.lang==='kn'?1:0];
+const CR={kasuti:['Kasuti','ಕಸೂತಿ','stitching'],beedu:['Beedu','ಬೀಡು','metal inlay work'],cane:['Cane weave','ಬೆತ್ತ','weaving']};
+let P=[
+{id:1,craft:'kasuti',n:['Kasuti silk saree','ಕಸೂತಿ ರೇಷ್ಮೆ ಸೀರೆ'],a:'Lakshmi Naik',v:'Honnavar',h:96,m:3800,w:120,c:['#7a1f2b','#e0a526','#f2e6c9'],s:['Every motif is counted thread by thread, with no drawn outline. Lakshmi learned the stitch from her mother and finishes one saree in about two weeks.','ಪ್ರತಿ ಮೋಟಿಫ್ ಅನ್ನು ದಾರ ಎಣಿಸಿ ಹೊಲಿಯಲಾಗುತ್ತದೆ. ಲಕ್ಷ್ಮಿ ಈ ಹೊಲಿಗೆಯನ್ನು ತಾಯಿಯಿಂದ ಕಲಿತರು.']},
+{id:2,craft:'kasuti',n:['Kasuti cushion cover','ಕಸೂತಿ ದಿಂಬು ಕವರ್'],a:'Lakshmi Naik',v:'Honnavar',h:9,m:260,w:120,c:['#26346b','#c4372b','#f6f1e7'],s:['Gopura and palanquin patterns in cotton thread, sized for a standard 16-inch cushion.','ಹತ್ತಿ ದಾರದಲ್ಲಿ ಗೋಪುರ ಮತ್ತು ಪಲ್ಲಕ್ಕಿ ಮಾದರಿಗಳು.']},
+{id:3,craft:'kasuti',n:['Kasuti table runner','ಕಸೂತಿ ಮೇಜಿನ ಪಟ್ಟಿ'],a:'Sakubai Shetty',v:'Udupi',h:14,m:340,w:110,c:['#1f6b5a','#e0a526','#efe9d6'],s:['A long runner stitched in running and cross stitch. Washable and colourfast.','ರನ್ನಿಂಗ್ ಮತ್ತು ಕ್ರಾಸ್ ಹೊಲಿಗೆಯ ಉದ್ದದ ಮೇಜಿನ ಪಟ್ಟಿ.']},
+{id:4,craft:'beedu',n:['Beedu trinket box','ಬೀಡು ಆಭರಣ ಡಬ್ಬಿ'],a:'Ramesh Acharya',v:'Karkala',h:22,m:900,w:150,c:['#20232a','#cfd5df','#20232a'],s:['Cast, engraved and inlaid by hand over several days. Each piece has a slightly different pattern.','ಹಲವು ದಿನಗಳ ಕೈಕೆಲಸ. ಪ್ರತಿ ವಸ್ತುವಿನ ಮಾದರಿ ಸ್ವಲ್ಪ ಭಿನ್ನ.']},
+{id:5,craft:'beedu',n:['Beedu round tray','ಬೀಡು ದುಂಡು ತಟ್ಟೆ'],a:'Ramesh Acharya',v:'Karkala',h:30,m:1400,w:150,c:['#2b2420','#e0c27a','#2b2420'],s:['A serving tray with a floral inlay border. Wipe clean with a dry cloth.','ಹೂವಿನ ಅಂಚಿನ ಬಡಿಸುವ ತಟ್ಟೆ.']},
+{id:6,craft:'cane',n:['Cane fruit basket','ಬೆತ್ತದ ಹಣ್ಣಿನ ಬುಟ್ಟಿ'],a:'Fatima Bhatkal',v:'Bhatkal',h:12,m:150,w:100,c:['#c9a06a','#8a5f2e','#c9a06a'],s:['Woven from split cane gathered locally, finished with a natural wax.','ಸ್ಥಳೀಯ ಬೆತ್ತದಿಂದ ನೇಯ್ದ ಬುಟ್ಟಿ.']}];
+let S={lang:'en',mode:'buyer',view:'home',f:'all',pid:null,cart:[],orders:[],tab:'add',busy:false,form:{craft:'kasuti',name:'',h:8,m:300,w:120,notes:'',img:'',s:null}};
+const fee=.08,price=(h,m,w)=>Math.round((m+h*w)*(1+fee)/10)*10,pr=p=>price(p.h,p.m,p.w);
+const fmt=n=>'₹'+Number(n).toLocaleString('en-IN');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nm=p=>p.n[S.lang==='kn'?1:0],sty=p=>p.s[S.lang==='kn'?1:0];
+try{const d=JSON.parse(localStorage.getItem('ks')||'{}');if(d.p)P=P.concat(d.p);if(d.o)S.orders=d.o}catch(e){}
+if(!S.orders.length)S.orders=[{id:'KS1001',items:[{id:1,q:1}],total:pr(P[0]),name:'Anita R.',addr:'Indiranagar, Bengaluru',st:0}];
+const save=()=>{try{localStorage.setItem('ks',JSON.stringify({p:P.filter(p=>p.id>6),o:S.orders}))}catch(e){}};
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.style.display='block';clearTimeout(toast.x);toast.x=setTimeout(()=>e.style.display='none',2400)}
+function art(p){const[a,b,c]=p.c;let g='';
+if(p.img)return`<img src="${p.img}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;display:block">`;
+if(p.craft==='kasuti'){for(let r=0;r<12;r++)for(let q=0;q<12;q++){const d=Math.abs(r-5.5)+Math.abs(q-5.5);if(d<6&&(r+q)%1===0&&(d<1.6||d>4||(r+q)%2===0)){const x=q*15+10,y=r*15+10,col=d<2?b:d>4?c:c;g+=`<path d="M${x} ${y}l9 9M${x+9} ${y}l-9 9" stroke="${d<2?b:c}" stroke-width="2.2" fill="none"/>`}}}
+else if(p.craft==='beedu'){for(let i=0;i<8;i++)g+=`<ellipse cx="100" cy="62" rx="10" ry="30" transform="rotate(${i*45} 100 100)" fill="none" stroke="${b}" stroke-width="1.6"/>`;[22,44,80].forEach(r=>g+=`<circle cx="100" cy="100" r="${r}" fill="none" stroke="${b}" stroke-width="1.4"/>`);g+=`<circle cx="100" cy="100" r="6" fill="${b}"/>`}
+else{for(let r=0;r<10;r++)for(let q=0;q<10;q++){const x=q*20,y=r*20;g+=(r+q)%2?`<path d="M${x+3} ${y+5}h14M${x+3} ${y+10}h14M${x+3} ${y+15}h14" stroke="${b}" stroke-width="2"/>`:`<path d="M${x+5} ${y+3}v14M${x+10} ${y+3}v14M${x+15} ${y+3}v14" stroke="${b}" stroke-width="2"/>`}}
+return`<svg viewBox="0 0 200 200" role="img" aria-label="${esc(p.n[0])}"><rect width="200" height="200" fill="${a}"/>${g}</svg>`}
+const share=p=>{const per=Math.round(Math.min(p.h*p.w,pr(p))/pr(p)*100);return per};
+function card(p){return`<button class="card" data-a="open" data-id="${p.id}">${art(p)}<div class="b"><h3>${esc(nm(p))}</h3><small>${CR[p.craft][S.lang==='kn'?1:0]} · ${esc(p.v)}</small><div class="row" style="justify-content:space-between;margin-top:6px"><span class="price">${fmt(pr(p))}</span><span class="tag">${p.h} ${t('hours')}</span></div></div></button>`}
+function split(p){const L=p.h*p.w,tot=pr(p),F=Math.max(0,tot-p.m-L);return`<div class="split" aria-hidden="true"><i style="width:${p.m/tot*100}%;background:var(--ind)"></i><i style="width:${L/tot*100}%;background:var(--red)"></i><i style="width:${F/tot*100}%;background:var(--gold)"></i></div><div class="leg"><span><b style="background:var(--ind)"></b>${t('mat')} ${fmt(p.m)}</span><span><b style="background:var(--red)"></b>${t('lab')} ${fmt(L)}</span><span><b style="background:var(--gold)"></b>${t('fee')} ${fmt(F)}</span></div>`}
+const cnt=()=>S.cart.reduce((a,c)=>a+c.q,0);
+function nav(){const b=S.mode==='buyer',items=b?[['home',t('shop')],['cart',t('cart')+(cnt()?' ('+cnt()+')':'')],['orders',t('orders')]]:[['add',t('add')],['aorders',t('orders')],['shop',t('mys')]];
+document.getElementById('nav').innerHTML=items.map(([v,l])=>`<button data-a="go" data-v="${v}" class="${S.view===v||(v==='home'&&S.view==='prod')?'on':''}">${l}</button>`).join('');
+document.getElementById('mb').textContent=t('buyer');document.getElementById('ma').textContent=t('artisan');
+[['mb',S.mode==='buyer'],['ma',S.mode==='artisan'],['le',S.lang==='en'],['lk',S.lang==='kn']].forEach(([i,o])=>document.getElementById(i).classList.toggle('on',o))}
+function home(){const fs=['all',...Object.keys(CR)],l=S.f==='all'?P:P.filter(p=>p.craft===S.f);
+return`<section class="hero"><h1>${S.lang==='kn'?'ಕರಾವಳಿಯ ಕೈಕೆಲಸ. ನ್ಯಾಯಯುತ ಬೆಲೆ.':'Hand-made on the coast. Priced in the open.'}</h1><p>${S.lang==='kn'?'ಪ್ರತಿ ವಸ್ತುವಿನ ಕಥೆ, ಮಾಡಿದವರು ಮತ್ತು ಬೆಲೆಯ ಲೆಕ್ಕ ಇಲ್ಲಿ ಕಾಣುತ್ತದೆ.':'Every piece shows who made it, how long it took, and where your money goes.'}</p></section><div class="chips">${fs.map(k=>`<button class="chip ${S.f===k?'on':''}" data-a="filter" data-k="${k}">${k==='all'?t('all'):CR[k][S.lang==='kn'?1:0]}</button>`).join('')}</div><div class="grid">${l.map(card).join('')}</div>`}
+function prod(){const p=P.find(x=>x.id===S.pid);if(!p)return home();
+return`<button class="btn alt" data-a="go" data-v="home">←</button><div class="cols" style="margin-top:14px"><div>${art(p)}</div><div><h2>${esc(nm(p))}</h2><p class="muted">${esc(p.a)}, ${esc(p.v)} · ${CR[p.craft][S.lang==='kn'?1:0]}</p>
+<div class="box"><div class="price" style="font-size:1.7rem">${fmt(pr(p))}</div><span class="tag">${S.lang==='kn'?`${p.h} ಗಂಟೆಗಳ ಕೈಕೆಲಸ; ಬೆಲೆಯ ${share(p)}% ಕುಶಲಕರ್ಮಿಗೆ`:`${p.h} hours by hand; ${share(p)}% of the price is the artisan’s pay`}</span>${split(p)}</div>
+<div class="row"><button class="btn" data-a="add" data-id="${p.id}">${t('addc')}</button><a class="btn alt" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(nm(p)+' — '+fmt(pr(p))+' '+location.href.split('#')[0]+'#p'+p.id)}">WhatsApp</a></div></div></div>
+<div class="cols" style="margin-top:20px"><div class="box"><h3>${t('story')}</h3><p>${esc(sty(p))}</p><button class="btn alt" data-a="speak" data-id="${p.id}">▶ ${t('play')}</button></div>
+<div class="box"><h3>${t('prov')}</h3><p class="muted" style="margin:0 0 8px">ID KS-${String(p.id).padStart(4,'0')} · ${CR[p.craft][0]} · ${esc(p.a)}</p><div class="qr" id="qr"></div></div></div>`}
+function cartV(){if(!S.cart.length)return`<h2>${t('cart')}</h2><p class="muted">${t('empty')}</p>`;
+const tot=S.cart.reduce((a,c)=>a+pr(P.find(p=>p.id===c.id))*c.q,0);
+return`<h2>${t('cart')}</h2><div class="steps"><span class="on">1 ${t('cart')}</span><span class="on">2 ${t('addr')}</span><span class="on">3 UPI</span></div><div class="box">${S.cart.map(c=>{const p=P.find(x=>x.id===c.id);return`<div class="row" style="justify-content:space-between;padding:6px 0"><span>${esc(nm(p))} × ${c.q}</span><span class="row"><b>${fmt(pr(p)*c.q)}</b><button class="btn alt" style="padding:4px 10px" data-a="rm" data-id="${p.id}" aria-label="Remove">✕</button></span></div>`}).join('')}<hr style="border:0;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><b>Total</b><b class="price">${fmt(tot)}</b></div></div>
+<div class="box"><label for="nm">Name</label><input id="nm" autocomplete="name"><label for="ad">${t('addr')}</label><textarea id="ad" rows="2"></textarea><label for="up">UPI ID</label><input id="up" placeholder="name@upi" inputmode="email"><p class="muted" style="font-size:.85rem">Demo payment only. No money moves.</p></div><button class="btn big" data-a="pay" ${S.busy?'disabled':''}>${S.busy?'…':t('pay')+' '+fmt(tot)}</button>`}
+const stl=['New','Accepted','Shipped','Delivered'];
+function ordersV(art){if(!S.orders.length)return`<h2>${t('orders')}</h2><p class="muted">${t('empty')}</p>`;
+return`<h2>${t('orders')}</h2>`+S.orders.slice().reverse().map(o=>`<div class="box"><div class="row" style="justify-content:space-between"><b>${o.id}</b><span class="tag">${stl[o.st]}</span></div><p style="margin:6px 0">${o.items.map(i=>{const p=P.find(x=>x.id===i.id);return p?esc(nm(p))+' × '+i.q:''}).join(', ')}<br><span class="muted">${esc(o.name)}, ${esc(o.addr)} · ${fmt(o.total)}</span></p>${art&&o.st<3?`<button class="btn" data-a="adv" data-id="${o.id}">${[t('acc'),t('shp'),t('del')][o.st]}</button>`:''}</div>`).join('')}
+function addV(){const f=S.form;
+return`<h2>${t('add')}</h2><div class="box"><label for="ph">${t('photo')}</label><input id="ph" type="file" accept="image/*" capture="environment" class="big-in"><div id="pv" style="margin-top:8px;max-width:160px"></div>
+<label for="fc">${t('craft')}</label><select id="fc" data-f="craft" class="big-in">${Object.keys(CR).map(k=>`<option value="${k}" ${f.craft===k?'selected':''}>${CR[k][S.lang==='kn'?1:0]}</option>`).join('')}</select>
+<label for="fn">${t('name')}</label><input id="fn" data-f="name" class="big-in" value="${esc(f.name)}">
+<label for="fo">${t('notes')}</label><textarea id="fo" data-f="notes" rows="3" class="big-in">${esc(f.notes)}</textarea><button class="btn alt mic" data-a="mic" style="margin-top:8px">🎤 ${t('speak')}</button></div>
+<div class="box"><div class="three"><div><label for="fh">${t('hours')}</label><input id="fh" data-f="h" type="number" min="1" value="${f.h}"></div><div><label for="fm">${t('matc')}</label><input id="fm" data-f="m" type="number" min="0" value="${f.m}"></div><div><label for="fw">${t('wage')}</label><input id="fw" data-f="w" type="number" min="0" value="${f.w}"></div></div><p style="margin:12px 0 0">${t('suggest')}: <b class="price" id="sp"></b></p><div id="sb"></div></div>
+<div class="box" id="gb"></div><div class="row"><button class="btn alt" data-a="gen">${t('gen')}</button><button class="btn" data-a="publish">${t('pub')}</button></div>`}
+function calc(){const f=S.form,p={h:+f.h||0,m:+f.m||0,w:+f.w||0,c:[]};const sp=document.getElementById('sp');if(!sp)return;sp.textContent=fmt(price(p.h,p.m,p.w))+' ('+fmt(Math.round(price(p.h,p.m,p.w)*.9))+'–'+fmt(Math.round(price(p.h,p.m,p.w)*1.15))+')';document.getElementById('sb').innerHTML=split(p)}
+function shopV(){let L=0,tot=0;S.orders.forEach(o=>o.items.forEach(i=>{const p=P.find(x=>x.id===i.id);if(p&&p.a==='Lakshmi Naik'){L+=p.h*p.w*i.q;tot+=pr(p)*i.q}}));const mine=P.filter(p=>p.a==='Lakshmi Naik');
+return`<h2>${t('mys')} · Lakshmi Naik</h2><div class="cols"><div class="box"><div class="stat">${fmt(tot)}</div><span class="muted">Sales</span></div><div class="box"><div class="stat">${fmt(L)}</div><span class="muted">${t('lab')}</span></div></div>
+<div class="box"><h3>Your share vs a middleman</h3><p class="muted" style="margin:0">KalaSetu: ${tot?Math.round(L/tot*100):0}% · Typical middleman route (assumed): about 35%</p><div class="split"><i style="width:${tot?L/tot*100:0}%;background:var(--red)"></i></div><div class="split"><i style="width:35%;background:var(--mut)"></i></div></div><div class="grid">${mine.map(card).join('')}</div>`}
+function render(){nav();const v=S.view,a=document.getElementById('app');
+a.innerHTML=v==='home'?home():v==='prod'?prod():v==='cart'?cartV():v==='orders'?ordersV(false):v==='aorders'?ordersV(true):v==='shop'?shopV():addV();
+if(v==='add'){calc();gb();pv()}
+if(v==='prod'){try{new QRCode(document.getElementById('qr'),{text:location.href.split('#')[0]+'#p'+S.pid,width:96,height:96})}catch(e){document.getElementById('qr').textContent='KS-'+S.pid}}}
+function gb(){const s=S.form.s;document.getElementById('gb').innerHTML=s?`<h3>${esc(s.n[S.lang==='kn'?1:0])}</h3><p>${esc(s.s[S.lang==='kn'?1:0])}</p>`:`<p class="muted">${S.lang==='kn'?'ಫೋಟೋ ಮತ್ತು ಮಾತು ಸೇರಿಸಿ, ನಂತರ “ಪಟ್ಟಿ ತಯಾರಿಸಿ” ಒತ್ತಿ.':'Add a photo and a few words, then press “Make my listing”.'}</p>`}
+function pv(){const e=document.getElementById('pv');if(e&&S.form.img)e.innerHTML=`<img src="${S.form.img}" alt="" style="width:100%;border-radius:6px">`}
+function gen(){const f=S.form,c=CR[f.craft],nE=f.name||`${c[0]} piece`,nK=f.name||`${c[1]} ವಸ್ತು`;
+S.form.s={n:[nE,nK],s:[`${nE} is hand-made by Lakshmi Naik in Honnavar. It took ${f.h} hours of ${c[2]}. ${f.notes}`.trim(),`${nK} — ಹೊನ್ನಾವರದ ಲಕ್ಷ್ಮಿ ನಾಯ್ಕ್ ಕೈಯಿಂದ ತಯಾರಿಸಿದ್ದು. ${f.h} ಗಂಟೆಗಳ ಶ್ರಮ. ${f.notes}`.trim()]};gb();toast('✓')}
+function mic(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Voice input is not supported in this browser. Please type.');
+const r=new R();r.lang=S.lang==='kn'?'kn-IN':'en-IN';r.onresult=e=>{const x=e.results[0][0].transcript,o=document.getElementById('fo');o.value=(o.value+' '+x).trim();S.form.notes=o.value};r.onerror=()=>toast('Could not hear. Try again.');r.start();toast('🎤 …')}
+function speak(id){const p=P.find(x=>x.id===id);if(!window.speechSynthesis)return toast('Audio not supported');const u=new SpeechSynthesisUtterance(sty(p));u.lang=S.lang==='kn'?'kn-IN':'en-IN';speechSynthesis.cancel();speechSynthesis.speak(u)}
+function pay(){const n=document.getElementById('nm').value.trim(),ad=document.getElementById('ad').value.trim(),up=document.getElementById('up').value.trim();
+if(!n||!ad||!/.+@.+/.test(up))return toast('Enter name, address and a UPI ID like name@upi');
+S.busy=true;render();setTimeout(()=>{const tot=S.cart.reduce((a,c)=>a+pr(P.find(p=>p.id===c.id))*c.q,0);S.orders.push({id:'KS'+(1001+S.orders.length),items:S.cart,total:tot,name:n,addr:ad,st:0});S.cart=[];S.busy=false;S.view='orders';save();render();toast('Payment successful ✓')},1400)}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,id=+el.dataset.id;
+if(a==='go'){S.view=el.dataset.v;render();scrollTo(0,0)}
+else if(a==='mode'){S.mode=el.dataset.m;S.view=S.mode==='buyer'?'home':'add';render()}
+else if(a==='lang'){S.lang=el.dataset.l;document.documentElement.lang=S.lang;render()}
+else if(a==='filter'){S.f=el.dataset.k;render()}
+else if(a==='open'){S.pid=id;S.view='prod';render();scrollTo(0,0)}
+else if(a==='add'){const c=S.cart.find(x=>x.id===id);c?c.q++:S.cart.push({id,q:1});nav();toast('✓ '+t('addc'))}
+else if(a==='rm'){S.cart=S.cart.filter(x=>x.id!==id);render()}
+else if(a==='pay')pay();
+else if(a==='adv'){const o=S.orders.find(x=>x.id===el.dataset.id);o.st++;save();render()}
+else if(a==='gen')gen();
+else if(a==='mic')mic();
+else if(a==='speak')speak(id);
+else if(a==='publish'){const f=S.form;if(!f.s)gen();const s=S.form.s;P.push({id:Date.now()%1e9,craft:f.craft,n:s.n,a:'Lakshmi Naik',v:'Honnavar',h:+f.h,m:+f.m,w:+f.w,c:['#26346b','#e0a526','#f6f1e7'],s:s.s,img:f.img});S.form={craft:'kasuti',name:'',h:8,m:300,w:120,notes:'',img:'',s:null};save();S.mode='buyer';S.view='home';render();toast('Published ✓')}});
+document.addEventListener('input',e=>{const k=e.target.dataset.f;if(k){S.form[k]=e.target.value;calc()}});
+document.addEventListener('change',e=>{if(e.target.id!=='ph'||!e.target.files[0])return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,500/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.form.img=c.toDataURL('image/jpeg',.7);pv()};im.src=r.result};r.readAsDataURL(e.target.files[0])});
+const h=location.hash.match(/^#p(\d+)$/);if(h&&P.find(p=>p.id==h[1])){S.pid=+h[1];S.view='prod'}
+render();
+</script>
+</body>
+</html>
