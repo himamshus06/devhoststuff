@@ -179,15 +179,15 @@ function ProductCard({ product, favorite, onFavorite, onOpen }) {
   return (
     <article className="product-card">
       <button className="product-image-button" onClick={() => onOpen(product)}
-        aria-label={`${t("View ")}${product.name}`}>
+        aria-label={`${t("View ")}${t(product.name)}`}>
         <div className="product-image-wrap" style={{ background: product.color }}>
-          <img className="product-image" src={product.image} alt={product.name}
+          <img className="product-image" src={product.image} alt={t(product.name)}
             loading="lazy"
             onError={(event) => {
               event.currentTarget.style.display = "none";
               event.currentTarget.parentElement.classList.add("image-fallback");
             }} />
-          <span className="product-tag">{product.tag}</span>
+          <span className="product-tag">{t(product.tag)}</span>
         </div>
       </button>
 
@@ -198,18 +198,18 @@ function ProductCard({ product, favorite, onFavorite, onOpen }) {
       </button>
 
       <div className="product-info">
-        <div className="product-craft">{product.craft}</div>
+        <div className="product-craft">{t(product.craft)}</div>
         <button className="product-name" onClick={() => onOpen(product)}>
-          {product.name}
+          {t(product.name)}
         </button>
         <div className="product-bottom">
           <span className="product-price">{money(product.price)}</span>
           <button className="product-arrow" onClick={() => onOpen(product)}
-            aria-label={`${t("See ")}${product.name}`}>
+            aria-label={`${t("See ")}${t(product.name)}`}>
             <ArrowUpRight size={19} />
           </button>
         </div>
-        <p className="product-artisan"><MapPin size={12} /> {product.location}</p>
+        <p className="product-artisan"><MapPin size={12} /> {t(product.location)}</p>
       </div>
     </article>
   );
@@ -222,22 +222,22 @@ function ProductModal({ product, onClose, onAdd }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <section className="product-modal" role="dialog" aria-modal="true"
-        aria-label={product.name}
+        aria-label={t(product.name)}
         onMouseDown={(event) => event.stopPropagation()}>
         <button className="modal-close" onClick={onClose} aria-label={t("Close")}>
           <X size={21} />
         </button>
         <div className="modal-image" style={{ background: product.color }}>
-          <img src={product.image} alt={product.name} />
+          <img src={product.image} alt={t(product.name)} />
         </div>
         <div className="modal-copy">
-          <span className="eyebrow">{product.craft}</span>
-          <h2>{product.name}</h2>
+          <span className="eyebrow">{t(product.craft)}</span>
+          <h2>{t(product.name)}</h2>
           <p className="modal-price">{money(product.price)}</p>
-          <p className="modal-description">{product.description}</p>
+          <p className="modal-description">{t(product.description)}</p>
           <div className="modal-maker">
             <span className="maker-icon">ಕಾ</span>
-            <div><strong>{product.artisan}</strong><span>{product.location}</span></div>
+            <div><strong>{t(product.artisan)}</strong><span>{t(product.location)}</span></div>
           </div>
           <Link className="text-link artisan-visit-link"
             to={`/artisan/${product.slug}`} onClick={onClose}>
@@ -284,9 +284,9 @@ function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
             <div className="cart-items">
               {entries.map(({ product, quantity }) => (
                 <div className="cart-item" key={product.id}>
-                  <img src={product.image} alt={product.name} />
+                  <img src={product.image} alt={t(product.name)} />
                   <div className="cart-item-info">
-                    <strong>{product.name}</strong>
+                    <strong>{t(product.name)}</strong>
                     <span>{money(product.price)}</span>
                     <div className="quantity-control">
                       <button onClick={() => onChangeQuantity(product.id, quantity - 1)}
@@ -478,7 +478,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
               <div><span>{t("Delivery address")}</span><strong>{order.address}</strong></div>
               {order.items.map((item) => (
                 <div key={item.productId}>
-                  <span>{item.name} × {item.quantity}</span>
+                   <span>{t(item.name)} × {item.quantity}</span>
                   <strong>{money(item.price * item.quantity)}</strong>
                 </div>
               ))}
@@ -546,7 +546,7 @@ export default function App() {
         product.craft === activeCraft;
       const query = searchTerm.trim().toLowerCase();
       const matchesSearch = !query ||
-        [product.name, product.craft, product.artisan, product.location]
+        [t(product.name), t(product.craft), t(product.artisan), t(product.location), t(product.description)]
           .join(" ").toLowerCase().includes(query);
       const matchesFavorite = !showFavoritesOnly ||
         favorites.includes(product.id);
@@ -557,7 +557,7 @@ export default function App() {
     if (sortBy === "price-high") result.sort((a, b) => b.price - a.price);
     if (sortBy === "name") result.sort((a, b) => a.name.localeCompare(b.name));
     return result;
-  }, [activeCraft, searchTerm, sortBy, favorites, showFavoritesOnly, sellerProducts]);
+  }, [activeCraft, searchTerm, sortBy, favorites, showFavoritesOnly, sellerProducts, t]);
 
   const heroAccentImage = sellerProducts[0]?.image || BASKET_IMAGE;
 

@@ -107,7 +107,7 @@ export default function ArtisanPage() {
         <div className="product-grid artisan-product-grid">
           {maker.products.map((product) => (
             <article className="product-card" key={product.name}>
-              <div className="product-image-wrap"><img className="product-image" src={product.image} alt={product.name} loading="lazy" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.parentElement.classList.add("image-fallback"); }} /></div>
+              <div className="product-image-wrap"><img className="product-image" src={product.image} alt={t(product.name)} loading="lazy" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.parentElement.classList.add("image-fallback"); }} /></div>
               <div className="product-info"><div className="product-craft">{t(maker.craft)}</div><h3 className="product-name">{t(product.name)}</h3><div className="product-bottom"><span className="product-price">{money(product.price)}</span><ShoppingBag size={18} /></div></div>
             </article>
           ))}
