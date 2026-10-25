@@ -9,32 +9,50 @@ const makers = {
   "savitri-hegde": {
     name: "Savitri Hegde", craft: "Kasuti Embroidery", location: "North Karnataka", initials: "SH",
     story: "Explore textiles inspired by Karnataka's intricate Kasuti embroidery tradition, where every stitch reflects patience, precision, and generations of craft knowledge.",
-    products: [{ name: "Kasuti Embroidered Textile", price: 1450, image: "https://images.livemint.com/img/2021/08/06/1140x641/kasuti_1_1628239231619_1628239246101.jpg" }],
+    products: [
+      { name: "Kasuti Embroidered Wall Textile", price: 1450, image: "https://images.livemint.com/img/2021/08/06/1140x641/kasuti_1_1628239231619_1628239246101.jpg" },
+      { name: "Lotus Kasuti Cushion Cover", price: 780, image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=85" },
+    ],
   },
   "basketry-artisan": {
     name: "Local Basketry Artisan", craft: "Basketry", location: "Coastal Karnataka", initials: "BA",
     story: "Discover useful, timeless woven pieces inspired by traditional basketry and the beauty of natural materials.",
-    products: [{ name: "Handwoven Bamboo Basket", price: 850, image: BASKET_IMAGE }],
+    products: [
+      { name: "Handwoven Bamboo Basket", price: 850, image: BASKET_IMAGE },
+      { name: "Little Market Carry Basket", price: 620, image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=85" },
+    ],
   },
   "coastal-clay-artisan": {
     name: "Coastal Clay Artisan", craft: "Terracotta", location: "Coastal Karnataka", initials: "CA",
     story: "Earthy handmade vessels celebrate the natural textures of clay and the enduring tradition of pottery.",
-    products: [{ name: "Traditional Terracotta Pot", price: 690, image: "https://images.jdmagicbox.com/quickquotes/images_main/traditional-terracotta-planters-weather-resistant-outdoor-grade-nan-atth-e4zelpwl.jpg" }],
+    products: [
+      { name: "Traditional Terracotta Pot", price: 690, image: "https://images.jdmagicbox.com/quickquotes/images_main/traditional-terracotta-planters-weather-resistant-outdoor-grade-nan-atth-e4zelpwl.jpg" },
+      { name: "Monsoon Blue Clay Tumbler Set", price: 980, image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=900&q=85" },
+    ],
   },
   "coastal-craft-collective": {
     name: "Coastal Craft Collective", craft: "Coastal Crafts", location: "Dakshina Kannada", initials: "CC",
     story: "Handmade pieces inspired by coastal materials and resourceful craft traditions.",
-    products: [{ name: "Handcrafted Coconut Shell Bowl", price: 420, image: "https://m.media-amazon.com/images/I/71OdGBGU6OL._AC_UF350,350_QL80_.jpg" }],
+    products: [
+      { name: "Handcrafted Coconut Shell Bowl", price: 420, image: "https://m.media-amazon.com/images/I/71OdGBGU6OL._AC_UF350,350_QL80_.jpg" },
+      { name: "Coconut Wood Serving Spoon", price: 340, image: "https://images.unsplash.com/photo-1584990347449-a9b9e4f3e4c4?auto=format&fit=crop&w=900&q=85" },
+    ],
   },
   "palm-leaf-artisan": {
     name: "Local Palm Leaf Artisan", craft: "Palm Leaf Craft", location: "Coastal Karnataka", initials: "PA",
     story: "Natural-textured woven pieces that bring a warm, handmade feel to everyday spaces.",
-    products: [{ name: "Palm Leaf Woven Mat", price: 580, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqy2PidbDvId627czlf_6MER8Lt3ABVYhMz6PCXg1LPBy23nzrhz3N8Z8&s=10" }],
+    products: [
+      { name: "Palm Leaf Woven Mat", price: 580, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqy2PidbDvId627czlf_6MER8Lt3ABVYhMz6PCXg1LPBy23nzrhz3N8Z8&s=10" },
+      { name: "Sunrise Palm Leaf Placemats", price: 720, image: "https://images.unsplash.com/photo-1603199506016-b9a594b593c0?auto=format&fit=crop&w=900&q=85" },
+    ],
   },
   "regional-folk-artist": {
     name: "Regional Folk Artist", craft: "Folk Art", location: "Karnataka", initials: "FA",
     story: "Explore artwork inspired by the colors and visual storytelling of Indian folk-art traditions.",
-    products: [{ name: "Hand-painted Folk Art", price: 1100, image: "https://cdn.vaaree.com/catalog/assets/ast_b6a04ebe32255b846c43c331edb48b59/variants/product_gallery_1200x1200_webp.webp" }],
+    products: [
+      { name: "Hand-painted Folk Art", price: 1100, image: "https://cdn.vaaree.com/catalog/assets/ast_b6a04ebe32255b846c43c331edb48b59/variants/product_gallery_1200x1200_webp.webp" },
+      { name: "Karnataka Village Print", price: 890, image: "https://images.unsplash.com/photo-1577083288073-40892c0860a4?auto=format&fit=crop&w=900&q=85" },
+    ],
   },
 };
 

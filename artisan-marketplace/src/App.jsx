@@ -24,19 +24,26 @@ import { LanguageToggle, useLanguage } from "./i18n.jsx";
 const BASKET_IMAGE =
   "https://amritkalash.shop/wp-content/uploads/2024/03/Handmade_Bamboo_Storage_Basket_.png";
 
-const products = [];
-/* const archivedDemoProducts = [
+const products = [
   {
     id: 1, slug: "savitri-hegde",
-    name: "Kasuti Embroidered Textile",
+    name: "Kasuti Embroidered Wall Textile",
     craft: "Kasuti Embroidery", artisan: "Savitri Hegde",
     location: "North Karnataka", price: 1450,
     image: "https://images.livemint.com/img/2021/08/06/1140x641/kasuti_1_1628239231619_1628239246101.jpg",
-    description: "A textile inspired by the intricate geometric patterns of traditional Kasuti hand embroidery.",
+    description: "A textile inspired by the intricate geometric patterns of traditional Kasuti hand embroidery, made slowly stitch by stitch.",
     color: "#E9D7C4", tag: "Hand embroidered",
   },
   {
-    id: 2, slug: "basketry-artisan",
+    id: 2, slug: "savitri-hegde",
+    name: "Lotus Kasuti Cushion Cover", craft: "Kasuti Embroidery",
+    artisan: "Savitri Hegde", location: "North Karnataka", price: 780,
+    image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=900&q=85",
+    description: "A soft cotton cushion cover with a quiet, geometric Kasuti-inspired border for a little colour at home.",
+    color: "#D7C7B8", tag: "Small batch",
+  },
+  {
+    id: 3, slug: "basketry-artisan",
     name: "Handwoven Bamboo Basket", craft: "Basketry",
     artisan: "Local Basketry Artisan", location: "Coastal Karnataka",
     price: 850, image: BASKET_IMAGE,
@@ -44,7 +51,15 @@ const products = [];
     color: "#DCC6A4", tag: "Natural weave",
   },
   {
-    id: 3, slug: "coastal-clay-artisan",
+    id: 4, slug: "basketry-artisan",
+    name: "Little Market Carry Basket", craft: "Basketry",
+    artisan: "Local Basketry Artisan", location: "Coastal Karnataka", price: 620,
+    image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=85",
+    description: "A light, easy-to-carry basket for market mornings, made from locally gathered natural fibres.",
+    color: "#E2D0B6", tag: "Everyday carry",
+  },
+  {
+    id: 5, slug: "coastal-clay-artisan",
     name: "Traditional Terracotta Pot", craft: "Terracotta",
     artisan: "Coastal Clay Artisan", location: "Coastal Karnataka",
     price: 690,
@@ -53,7 +68,15 @@ const products = [];
     color: "#C9825D", tag: "Earth made",
   },
   {
-    id: 4, slug: "coastal-craft-collective",
+    id: 6, slug: "coastal-clay-artisan",
+    name: "Monsoon Blue Clay Tumbler Set", craft: "Terracotta",
+    artisan: "Coastal Clay Artisan", location: "Coastal Karnataka", price: 980,
+    image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=900&q=85",
+    description: "A pair of hand-thrown tumblers with a soft blue wash and the gentle irregularity of handmade pottery.",
+    color: "#B9C6C8", tag: "Wheel thrown",
+  },
+  {
+    id: 7, slug: "coastal-craft-collective",
     name: "Handcrafted Coconut Shell Bowl", craft: "Coastal Crafts",
     artisan: "Coastal Craft Collective", location: "Dakshina Kannada",
     price: 420,
@@ -62,7 +85,15 @@ const products = [];
     color: "#B7A18A", tag: "Natural materials",
   },
   {
-    id: 5, slug: "palm-leaf-artisan",
+    id: 8, slug: "coastal-craft-collective",
+    name: "Coconut Wood Serving Spoon", craft: "Coastal Crafts",
+    artisan: "Coastal Craft Collective", location: "Dakshina Kannada", price: 340,
+    image: "https://images.unsplash.com/photo-1584990347449-a9b9e4f3e4c4?auto=format&fit=crop&w=900&q=85",
+    description: "A warm-toned serving spoon shaped from coconut wood and finished with food-safe oil.",
+    color: "#CBB296", tag: "Made for everyday",
+  },
+  {
+    id: 9, slug: "palm-leaf-artisan",
     name: "Palm Leaf Woven Mat", craft: "Palm Leaf Craft",
     artisan: "Local Palm Leaf Artisan", location: "Coastal Karnataka",
     price: 580,
@@ -71,7 +102,15 @@ const products = [];
     color: "#D8C7A5", tag: "Handwoven",
   },
   {
-    id: 6, slug: "regional-folk-artist",
+    id: 10, slug: "palm-leaf-artisan",
+    name: "Sunrise Palm Leaf Placemats", craft: "Palm Leaf Craft",
+    artisan: "Local Palm Leaf Artisan", location: "Coastal Karnataka", price: 720,
+    image: "https://images.unsplash.com/photo-1603199506016-b9a594b593c0?auto=format&fit=crop&w=900&q=85",
+    description: "A set of four woven placemats that bring the texture of the coast to the everyday table.",
+    color: "#E4D6AE", tag: "Set of four",
+  },
+  {
+    id: 11, slug: "regional-folk-artist",
     name: "Hand-painted Folk Art", craft: "Folk Art",
     artisan: "Regional Folk Artist", location: "Karnataka",
     price: 1100,
@@ -79,7 +118,15 @@ const products = [];
     description: "Artwork inspired by the colors and visual storytelling of Indian folk art.",
     color: "#D6B6A4", tag: "Artist made",
   },
-]; */
+  {
+    id: 12, slug: "regional-folk-artist",
+    name: "Karnataka Village Print", craft: "Folk Art",
+    artisan: "Regional Folk Artist", location: "Karnataka", price: 890,
+    image: "https://images.unsplash.com/photo-1577083288073-40892c0860a4?auto=format&fit=crop&w=900&q=85",
+    description: "A cheerful folk-art print that celebrates village life, bold colour, and hand-drawn storytelling.",
+    color: "#D8B49F", tag: "Colourful story",
+  },
+];
 
 const crafts = [
   "All crafts", "Kasuti Embroidery", "Basketry", "Terracotta",
