@@ -32,7 +32,7 @@ const translations = {
   "discovered.": "ಅರ್ಹವಾದವು.",
   "Meaningful pieces from makers who keep tradition alive.": "ಪರಂಪರೆಯನ್ನು ಜೀವಂತವಾಗಿಟ್ಟಿರುವ ತಯಾರಕರ ಅರ್ಥಪೂರ್ಣ ಉತ್ಪನ್ನಗಳು.",
   "All crafts": "ಎಲ್ಲಾ ಕರಕುಶಲಗಳು",
-  "Kasuti Embroidery": "ಕಸೂತಿ ಕಸೂತಿ ಕೆಲಸ",
+  "Kasuti Embroidery": "ಕಸೂತಿ ಕೆಲಸ",
   "Basketry": "ಬುಟ್ಟಿ ಹೆಣಿಗೆ",
   "Terracotta": "ಟೆರಾಕೋಟಾ",
   "Coastal Crafts": "ಕರಾವಳಿ ಕರಕುಶಲ",
