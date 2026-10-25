@@ -4,6 +4,8 @@ const translations = {
   "Thoughtfully made. Rooted in Karnataka.": "ಚಿಂತನಶೀಲವಾಗಿ ತಯಾರಿಸಿದ್ದು. ಕರ್ನಾಟಕದ ಬೇರುಗಳೊಂದಿಗೆ.",
   "Made by hand, meant to be kept.": "ಕೈಯಿಂದ ಮಾಡಿದವು, ಸದಾ ಉಳಿಸಿಕೊಳ್ಳುವಂತಹವು.",
   "Shop all": "ಎಲ್ಲವನ್ನೂ ನೋಡಿ",
+  "Kasuti": "ಕಸೂತಿ",
+  "Basketry": "ಬುಟ್ಟಿ ಹೆಣಿಗೆ",
   "Our story": "ನಮ್ಮ ಕಥೆ",
   "Sign in": "ಸೈನ್ ಇನ್",
   "My shop": "ನನ್ನ ಅಂಗಡಿ",

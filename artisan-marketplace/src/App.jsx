@@ -625,10 +625,10 @@ export default function App() {
           <nav className={`main-nav ${mobileMenuOpen ? "nav-open" : ""}`}>
             <button onClick={goToShop}>{t("Shop all")}</button>
             <button onClick={() => { setActiveCraft("Kasuti Embroidery"); goToShop(); }}>
-              Kasuti
+              {t("Kasuti")}
             </button>
             <button onClick={() => { setActiveCraft("Basketry"); goToShop(); }}>
-              Basketry
+              {t("Basketry")}
             </button>
             <a href="#our-story" onClick={() => setMobileMenuOpen(false)}>{t("Our story")}</a>
           </nav>
