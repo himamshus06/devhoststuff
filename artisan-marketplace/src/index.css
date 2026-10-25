@@ -5338,3 +5338,36 @@ img {
 .seller-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(300px, 1.1fr); gap: 2rem; }.listing-panel, .seller-listings { padding: clamp(1.25rem, 3vw, 2rem); background: #fff; border: 1px solid var(--line); }.listing-panel h2, .seller-listings h2 { font-family: var(--serif); margin: .3rem 0 1.4rem; }.two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }.listing-form textarea { min-height: 110px; resize: vertical; }.voice-button { justify-content: center; }.listing-preview { max-width: 180px; max-height: 130px; object-fit: cover; border: 1px solid var(--line); }.seller-product { display: flex; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--line); }.seller-product img, .seller-product-placeholder { width: 85px; height: 85px; object-fit: cover; background: var(--paper-dark); flex: none; }.seller-product div { display: grid; align-content: start; gap: .3rem; }.seller-product p { margin: 0; color: var(--muted); font-size: .85rem; }.seller-empty { color: var(--muted); padding: 2rem 0; }
 @media (max-width: 760px) { .seller-grid { grid-template-columns: 1fr; }.seller-header { align-items: flex-start; gap: 1rem; }.seller-header > div { align-items: flex-end; flex-direction: column; }.seller-stats { flex-direction: column; }.two-fields { grid-template-columns: 1fr; }.seller-page .account-link { display: none; } }
 .listing-images { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; }.listing-image { position: relative; aspect-ratio: 1; }.listing-image img { width: 100%; height: 100%; object-fit: cover; border: 1px solid var(--line); }.listing-image button { position: absolute; top: .2rem; right: .2rem; border: 0; border-radius: 50%; padding: .25rem; color: #fff; background: #282b22cc; cursor: pointer; line-height: 0; }
+
+.site-header .header-inner { min-width: 0; }
+.site-header .signout-button { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .site-header .header-inner {
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .site-header .brand-logo-image {
+    width: 78px;
+    height: 52px;
+  }
+
+  .site-header .header-actions {
+    min-width: 0;
+    flex: 1;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .site-header .header-actions > * { flex-shrink: 0; }
+  .site-header .language-toggle { padding: .36rem .48rem; font-size: .72rem; }
+  .site-header .account-link { max-width: 78px; overflow: hidden; text-overflow: ellipsis; font-size: .78rem; }
+}
+
+@media (max-width: 430px) {
+  .site-header .brand-logo-image { width: 68px; height: 48px; }
+  .site-header .header-actions { gap: 5px; }
+  .site-header .account-link { max-width: 62px; }
+  .site-header .signout-label { display: none; }
+}

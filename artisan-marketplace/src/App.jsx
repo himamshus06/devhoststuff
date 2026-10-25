@@ -7,6 +7,7 @@ import {
   Check,
   Heart,
   Leaf,
+  LogOut,
   MapPin,
   Menu,
   Minus,
@@ -638,7 +639,9 @@ export default function App() {
                 <Link className="account-link" to={session.role === "seller" ? "/seller/dashboard" : "/"}>
                   {session.role === "seller" ? t("My shop") : `${t("Hi, ")}${session.name.split(" ")[0]}`}
                 </Link>
-                <button className="header-icon" onClick={() => { clearSession(); setSession(null); }} aria-label={t("Sign out")}>{t("Sign out")}</button>
+                <button className="header-icon signout-button" onClick={() => { clearSession(); setSession(null); }} aria-label={t("Sign out")}>
+                  <LogOut size={17} /> <span className="signout-label">{t("Sign out")}</span>
+                </button>
               </>
             ) : <Link className="account-link" to="/login">{t("Sign in")}</Link>}
             <button className={`header-icon ${showFavoritesOnly ? "active-icon" : ""}`}
