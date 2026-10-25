@@ -19,6 +19,7 @@ import {
 import { Link } from "react-router-dom";
 import { clearSession, getSellerProducts, getSession, saveOrders } from "./localStore";
 import "./index.css";
+import { LanguageToggle, useLanguage } from "./i18n.jsx";
 
 const BASKET_IMAGE =
   "https://amritkalash.shop/wp-content/uploads/2024/03/Handmade_Bamboo_Storage_Basket_.png";
@@ -86,7 +87,7 @@ const crafts = [
 ];
 
 const money = (amount) =>
-  new Intl.NumberFormat("en-IN", {
+  new Intl.NumberFormat(document.documentElement.lang === "kn" ? "kn-IN" : "en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
@@ -109,12 +110,13 @@ function readOrders() {
 }
 
 function Brand({ onClick }) {
+  const { t } = useLanguage();
   return (
     <button
       type="button"
       className="brand"
       onClick={onClick}
-      aria-label="KAYAKA home"
+      aria-label={t("KAYAKA home")}
     >
       <img
         src="/kayaka-logo.png"
@@ -126,10 +128,11 @@ function Brand({ onClick }) {
 }
 
 function ProductCard({ product, favorite, onFavorite, onOpen }) {
+  const { t } = useLanguage();
   return (
     <article className="product-card">
       <button className="product-image-button" onClick={() => onOpen(product)}
-        aria-label={`View ${product.name}`}>
+        aria-label={`${t("View ")}${product.name}`}>
         <div className="product-image-wrap" style={{ background: product.color }}>
           <img className="product-image" src={product.image} alt={product.name}
             loading="lazy"
@@ -143,7 +146,7 @@ function ProductCard({ product, favorite, onFavorite, onOpen }) {
 
       <button className={`favorite-button ${favorite ? "is-favorite" : ""}`}
         onClick={() => onFavorite(product.id)}
-        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}>
+        aria-label={t(favorite ? "Remove from favorites" : "Add to favorites")}>
         <Heart size={18} fill={favorite ? "currentColor" : "none"} />
       </button>
 
@@ -155,7 +158,7 @@ function ProductCard({ product, favorite, onFavorite, onOpen }) {
         <div className="product-bottom">
           <span className="product-price">{money(product.price)}</span>
           <button className="product-arrow" onClick={() => onOpen(product)}
-            aria-label={`See ${product.name}`}>
+            aria-label={`${t("See ")}${product.name}`}>
             <ArrowUpRight size={19} />
           </button>
         </div>
@@ -166,6 +169,7 @@ function ProductCard({ product, favorite, onFavorite, onOpen }) {
 }
 
 function ProductModal({ product, onClose, onAdd }) {
+  const { t } = useLanguage();
   if (!product) return null;
 
   return (
@@ -173,7 +177,7 @@ function ProductModal({ product, onClose, onAdd }) {
       <section className="product-modal" role="dialog" aria-modal="true"
         aria-label={product.name}
         onMouseDown={(event) => event.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close">
+        <button className="modal-close" onClick={onClose} aria-label={t("Close")}>
           <X size={21} />
         </button>
         <div className="modal-image" style={{ background: product.color }}>
@@ -190,12 +194,12 @@ function ProductModal({ product, onClose, onAdd }) {
           </div>
           <Link className="text-link artisan-visit-link"
             to={`/artisan/${product.slug}`} onClick={onClose}>
-            Visit artisan shop <ArrowUpRight size={16} />
+            {t("Visit artisan shop")} <ArrowUpRight size={16} />
           </Link>
           <button className="button button-dark button-full" onClick={() => onAdd(product)}>
-            Add to bag <ShoppingBag size={17} />
+            {t("Add to bag")} <ShoppingBag size={17} />
           </button>
-          <p className="seller-note"><Leaf size={14} /> No platform commission charged to the artisan.</p>
+          <p className="seller-note"><Leaf size={14} /> {t("No platform commission charged to the artisan.")}</p>
         </div>
       </section>
     </div>
@@ -203,6 +207,7 @@ function ProductModal({ product, onClose, onAdd }) {
 }
 
 function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
+  const { t } = useLanguage();
   const entries = Object.values(cart);
   const subtotal = entries.reduce((sum, entry) =>
     sum + entry.product.price * entry.quantity, 0);
@@ -210,10 +215,10 @@ function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
   return (
     <div className="modal-backdrop drawer-backdrop" onMouseDown={onClose}>
       <aside className="cart-drawer" role="dialog" aria-modal="true"
-        aria-label="Shopping bag" onMouseDown={(event) => event.stopPropagation()}>
+        aria-label={t("Shopping bag")} onMouseDown={(event) => event.stopPropagation()}>
         <div className="drawer-header">
-          <div><span className="eyebrow">YOUR SELECTION</span><h2>Your bag</h2></div>
-          <button className="icon-button" onClick={onClose} aria-label="Close bag">
+          <div><span className="eyebrow">{t("YOUR SELECTION")}</span><h2>{t("Your bag")}</h2></div>
+          <button className="icon-button" onClick={onClose} aria-label={t("Close bag")}>
             <X size={21} />
           </button>
         </div>
@@ -221,10 +226,10 @@ function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
         {!entries.length ? (
           <div className="empty-state">
             <ShoppingBag size={34} strokeWidth={1.3} />
-            <h3>Your bag is waiting.</h3>
-            <p>Find something handmade and make it yours.</p>
+            <h3>{t("Your bag is waiting.")}</h3>
+            <p>{t("Find something handmade and make it yours.")}</p>
             <button className="button button-dark" onClick={onClose}>
-              Explore the collection <ArrowRight size={16} />
+              {t("Explore the collection")} <ArrowRight size={16} />
             </button>
           </div>
         ) : (
@@ -238,13 +243,13 @@ function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
                     <span>{money(product.price)}</span>
                     <div className="quantity-control">
                       <button onClick={() => onChangeQuantity(product.id, quantity - 1)}
-                        aria-label="Decrease quantity"><Minus size={13} /></button>
+                        aria-label={t("Decrease quantity")}><Minus size={13} /></button>
                       <span>{quantity}</span>
                       <button onClick={() => onChangeQuantity(product.id, quantity + 1)}
-                        aria-label="Increase quantity"><Plus size={13} /></button>
+                        aria-label={t("Increase quantity")}><Plus size={13} /></button>
                     </div>
                     <button className="cart-remove"
-                      onClick={() => onChangeQuantity(product.id, 0)}>Remove</button>
+                      onClick={() => onChangeQuantity(product.id, 0)}>{t("Remove")}</button>
                   </div>
                   <strong className="cart-line-total">
                     {money(product.price * quantity)}
@@ -253,11 +258,11 @@ function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
               ))}
             </div>
             <div className="cart-summary">
-              <div><span>Subtotal</span><strong>{money(subtotal)}</strong></div>
-              <div><span>Artisan commission</span><strong>₹0</strong></div>
-              <p>Artisans pay zero platform commission.</p>
+              <div><span>{t("Subtotal")}</span><strong>{money(subtotal)}</strong></div>
+              <div><span>{t("Artisan commission")}</span><strong>₹0</strong></div>
+              <p>{t("Artisans pay zero platform commission.")}</p>
               <button className="button button-dark button-full" onClick={onCheckout}>
-                Continue to checkout <ArrowRight size={17} />
+                {t("Continue to checkout")} <ArrowRight size={17} />
               </button>
             </div>
           </>
@@ -268,6 +273,7 @@ function CartDrawer({ cart, onClose, onChangeQuantity, onCheckout }) {
 }
 
 function CheckoutModal({ cart, onClose, onComplete }) {
+  const { t } = useLanguage();
   const [step, setStep] = useState("address");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -286,7 +292,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
     event.preventDefault();
     setError("");
     if (!name.trim() || !/^\d{10}$/.test(phone) || !address.trim()) {
-      setError("Enter your name, a valid 10-digit phone number and delivery address.");
+      setError(t("Enter your name, a valid 10-digit phone number and delivery address."));
       return;
     }
     setStep("payment");
@@ -295,7 +301,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
   function placeDemoOrder() {
     setError("");
     if (!entries.length) {
-      setError("Your cart is empty.");
+      setError(t("Your cart is empty."));
       return;
     }
 
@@ -331,41 +337,41 @@ function CheckoutModal({ cart, onClose, onComplete }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <section className="checkout-modal" role="dialog" aria-modal="true"
-        aria-label="Checkout" onMouseDown={(event) => event.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close checkout">
+        aria-label={t("Checkout")} onMouseDown={(event) => event.stopPropagation()}>
+        <button className="modal-close" onClick={onClose} aria-label={t("Close checkout")}>
           <X size={21} />
         </button>
 
         {step === "address" && (
           <>
-            <span className="eyebrow">STEP 1 OF 3</span>
-            <h2>Delivery details</h2>
-            <p className="checkout-intro">Where should your handmade finds go?</p>
+            <span className="eyebrow">{t("STEP 1 OF 3")}</span>
+            <h2>{t("Delivery details")}</h2>
+            <p className="checkout-intro">{t("Where should your handmade finds go?")}</p>
             <form className="checkout-form" onSubmit={continueCheckout}>
-              <label>Full name
+              <label>{t("Full name")}
                 <input value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name" required />
+                  placeholder={t("Your name")} required />
               </label>
-              <label>Phone number
+              <label>{t("Phone number")}
                 <input type="tel" inputMode="numeric" maxLength={10}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                  placeholder="10-digit phone number" required />
+                  placeholder={t("10-digit phone number")} required />
               </label>
-              <label>Delivery address
+              <label>{t("Delivery address")}
                 <textarea rows={3} value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="House, street, city, PIN code" required />
+                  placeholder={t("House, street, city, PIN code")} required />
               </label>
               {error && <p className="payment-error" role="alert">{error}</p>}
               <div className="checkout-total">
-                <div><span>Subtotal</span><strong>{money(subtotal)}</strong></div>
-                <div><span>Buyer platform fee (5%)</span><strong>{money(platformFee)}</strong></div>
-                <div className="grand-total"><span>Total</span><strong>{money(total)}</strong></div>
-                <p>The artisan pays ₹0 commission.</p>
+                <div><span>{t("Subtotal")}</span><strong>{money(subtotal)}</strong></div>
+                <div><span>{t("Buyer platform fee (5%)")}</span><strong>{money(platformFee)}</strong></div>
+                <div className="grand-total"><span>{t("Total")}</span><strong>{money(total)}</strong></div>
+                <p>{t("The artisan pays ₹0 commission.")}</p>
               </div>
               <button className="button button-dark button-full" type="submit">
-                Continue to payment <ArrowRight size={17} />
+                {t("Continue to payment")} <ArrowRight size={17} />
               </button>
             </form>
           </>
@@ -373,25 +379,25 @@ function CheckoutModal({ cart, onClose, onComplete }) {
 
         {step === "payment" && (
           <>
-            <span className="eyebrow">STEP 2 OF 3</span>
-            <h2>Demo payment</h2>
+            <span className="eyebrow">{t("STEP 2 OF 3")}</span>
+            <h2>{t("Demo payment")}</h2>
             <p className="checkout-intro">
-              Simulation only. No real money will be transferred.
+              {t("Simulation only. No real money will be transferred.")}
             </p>
             <div className="checkout-total">
-              <div><span>Order total</span><strong>{money(total)}</strong></div>
+              <div><span>{t("Order total")}</span><strong>{money(total)}</strong></div>
             </div>
             <fieldset className="payment-options">
-              <legend>Choose payment method</legend>
+              <legend>{t("Choose payment method")}</legend>
               <label className="payment-option">
                 <input type="radio" name="method" checked={method === "razorpay"}
                   onChange={() => setMethod("razorpay")} />
-                <span><strong>Razorpay test-mode simulation</strong><small>Official Checkout-style flow; no payment is processed</small></span>
+                <span><strong>{t("Razorpay test-mode simulation")}</strong><small>{t("Official Checkout-style flow; no payment is processed")}</small></span>
               </label>
               <label className="payment-option">
                 <input type="radio" name="method" checked={method === "cod"}
                   onChange={() => setMethod("cod")} />
-                <span><strong>Cash on delivery</strong><small>Demo selection only</small></span>
+                <span><strong>{t("Cash on delivery")}</strong><small>{t("Demo selection only")}</small></span>
               </label>
             </fieldset>
             {error && <p className="payment-error" role="alert">{error}</p>}
@@ -399,13 +405,13 @@ function CheckoutModal({ cart, onClose, onComplete }) {
               <button className="button button-outline" onClick={() => {
                 setStep("address");
                 setError("");
-              }}>Back</button>
+              }}>{t("Back")}</button>
               <button className="button button-dark" onClick={placeDemoOrder}>
-                Simulate Razorpay payment <Check size={17} />
+                {t("Simulate Razorpay payment")} <Check size={17} />
               </button>
             </div>
             <p className="demo-disclaimer">
-              This prototype does not charge an account or contact a payment service.
+              {t("This prototype does not charge an account or contact a payment service.")}
             </p>
           </>
         )}
@@ -413,28 +419,28 @@ function CheckoutModal({ cart, onClose, onComplete }) {
         {step === "confirmation" && order && (
           <div className="order-success">
             <span className="success-icon"><Check size={26} /></span>
-            <span className="eyebrow">STEP 3 OF 3 · ORDER CONFIRMED</span>
-            <h2>Thank you for choosing handmade.</h2>
-            <p>Your demo order has been saved on this device.</p>
+            <span className="eyebrow">{t("STEP 3 OF 3 · ORDER CONFIRMED")}</span>
+            <h2>{t("Thank you for choosing handmade.")}</h2>
+            <p>{t("Your demo order has been saved on this device.")}</p>
             <div className="order-reference">
-              <span>Order reference</span><strong>{order.id}</strong>
+              <span>{t("Order reference")}</span><strong>{order.id}</strong>
             </div>
             <div className="confirmation-details">
-              <div><span>Payment status</span><strong>{order.paymentStatus}</strong></div>
-              <div><span>Delivery to</span><strong>{order.name}</strong></div>
-              <div><span>Address</span><strong>{order.address}</strong></div>
+              <div><span>{t("Payment status")}</span><strong>{order.paymentStatus}</strong></div>
+              <div><span>{t("Delivery to")}</span><strong>{order.name}</strong></div>
+              <div><span>{t("Delivery address")}</span><strong>{order.address}</strong></div>
               {order.items.map((item) => (
                 <div key={item.productId}>
                   <span>{item.name} × {item.quantity}</span>
                   <strong>{money(item.price * item.quantity)}</strong>
                 </div>
               ))}
-              <div><span>Subtotal</span><strong>{money(order.subtotal)}</strong></div>
-              <div><span>Buyer fee</span><strong>{money(order.platformFee)}</strong></div>
-              <div><span>Total</span><strong>{money(order.total)}</strong></div>
+              <div><span>{t("Subtotal")}</span><strong>{money(order.subtotal)}</strong></div>
+              <div><span>{t("Buyer fee")}</span><strong>{money(order.platformFee)}</strong></div>
+              <div><span>{t("Total")}</span><strong>{money(order.total)}</strong></div>
             </div>
             <button className="button button-dark button-full" onClick={onClose}>
-              Back to the marketplace <ArrowRight size={17} />
+              {t("Back to the marketplace")} <ArrowRight size={17} />
             </button>
           </div>
         )}
@@ -444,6 +450,7 @@ function CheckoutModal({ cart, onClose, onComplete }) {
 }
 
 export default function App() {
+  const { t } = useLanguage();
   const [activeCraft, setActiveCraft] = useState("All crafts");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("featured");
@@ -560,35 +567,36 @@ export default function App() {
   return (
     <div className="site-shell">
       <div className="announcement-bar">
-        Thoughtfully made. Rooted in Karnataka.
-        <span>Made by hand, meant to be kept.</span>
+        {t("Thoughtfully made. Rooted in Karnataka.")}
+        <span>{t("Made by hand, meant to be kept.")}</span>
       </div>
 
       <header className="site-header">
         <div className="header-inner">
           <Brand onClick={goHome} />
           <nav className={`main-nav ${mobileMenuOpen ? "nav-open" : ""}`}>
-            <button onClick={goToShop}>Shop all</button>
+            <button onClick={goToShop}>{t("Shop all")}</button>
             <button onClick={() => { setActiveCraft("Kasuti Embroidery"); goToShop(); }}>
               Kasuti
             </button>
             <button onClick={() => { setActiveCraft("Basketry"); goToShop(); }}>
               Basketry
             </button>
-            <a href="#our-story" onClick={() => setMobileMenuOpen(false)}>Our story</a>
+            <a href="#our-story" onClick={() => setMobileMenuOpen(false)}>{t("Our story")}</a>
           </nav>
           <div className="header-actions">
+            <LanguageToggle />
             {session ? (
               <>
                 <Link className="account-link" to={session.role === "seller" ? "/seller/dashboard" : "/"}>
-                  {session.role === "seller" ? "My shop" : `Hi, ${session.name.split(" ")[0]}`}
+                  {session.role === "seller" ? t("My shop") : `${t("Hi, ")}${session.name.split(" ")[0]}`}
                 </Link>
-                <button className="header-icon" onClick={() => { clearSession(); setSession(null); }} aria-label="Sign out">Sign out</button>
+                <button className="header-icon" onClick={() => { clearSession(); setSession(null); }} aria-label={t("Sign out")}>{t("Sign out")}</button>
               </>
-            ) : <Link className="account-link" to="/login">Sign in</Link>}
+            ) : <Link className="account-link" to="/login">{t("Sign in")}</Link>}
             <button className={`header-icon ${showFavoritesOnly ? "active-icon" : ""}`}
               onClick={() => { setShowFavoritesOnly((value) => !value); goToShop(); }}
-              aria-label="Toggle favorites">
+              aria-label={t("Toggle favorites")}>
               <Heart size={19} />
             </button>
             <button className="header-icon bag-button"
@@ -598,7 +606,7 @@ export default function App() {
             </button>
             <button className="mobile-menu-button"
               onClick={() => setMobileMenuOpen((value) => !value)}
-              aria-label="Toggle navigation">
+              aria-label={t("Toggle navigation")}>
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
@@ -608,66 +616,66 @@ export default function App() {
       <main>
         <section className="hero">
           <div className="hero-copy">
-            <span className="eyebrow hero-eyebrow">A MARKETPLACE FOR THE MADE-BY-HAND</span>
-            <h1>Good things<br />are made <em>slowly.</em></h1>
-            <p>Discover the hands, heritage, and little details behind Karnataka's beautiful handmade crafts.</p>
+            <span className="eyebrow hero-eyebrow">{t("A MARKETPLACE FOR THE MADE-BY-HAND")}</span>
+            <h1>{t("Good things")}<br />{t("are made ")}<em>{t("slowly.")}</em></h1>
+            <p>{t("Discover the hands, heritage, and little details behind Karnataka's beautiful handmade crafts.")}</p>
             <div className="hero-actions">
               <button className="button button-dark" onClick={goToShop}>
-                Explore the collection <ArrowRight size={17} />
+                {t("Explore the collection")} <ArrowRight size={17} />
               </button>
-              <a className="text-link" href="#our-story">Get to know us <ArrowDownRight size={16} /></a>
+              <a className="text-link" href="#our-story">{t("Get to know us")} <ArrowDownRight size={16} /></a>
             </div>
             <div className="hero-note">
               <span className="hero-note-icon"><Leaf size={16} /></span>
-              <span>Small-batch pieces, made with care.</span>
+              <span>{t("Small-batch pieces, made with care.")}</span>
             </div>
           </div>
           <div className="hero-visual">
             <div className="hero-image-main">
-              <img src={BASKET_IMAGE} alt="Handwoven bamboo basket" />
+              <img src={BASKET_IMAGE} alt={t("Handwoven bamboo basket")} />
             </div>
             <div className="hero-image-small">
-              <img src={heroAccentImage} alt="Handmade marketplace preview" />
+              <img src={heroAccentImage} alt={t("Handmade marketplace preview")} />
             </div>
             <div className="hero-stamp">
-              <span>CRAFTED</span><span>WITH CARE</span><span className="stamp-symbol">ಕಾ</span>
+              <span>{t("CRAFTED")}</span><span>{t("WITH CARE")}</span><span className="stamp-symbol">ಕಾ</span>
             </div>
-            <p className="hero-image-caption">Tradition, woven into everyday life.</p>
+            <p className="hero-image-caption">{t("Tradition, woven into everyday life.")}</p>
           </div>
         </section>
 
-        <section className="values-strip" aria-label="Our values">
+        <section className="values-strip" aria-label={t("Our values")}>
           <div className="value-item">
             <span className="value-symbol"><Leaf size={19} /></span>
-            <div><strong>Made by hand</strong><span>Not mass produced</span></div>
+            <div><strong>{t("Made by hand")}</strong><span>{t("Not mass produced")}</span></div>
           </div>
           <div className="value-item">
             <span className="value-symbol"><Heart size={19} /></span>
-            <div><strong>Rooted in heritage</strong><span>Craft with a story</span></div>
+            <div><strong>{t("Rooted in heritage")}</strong><span>{t("Craft with a story")}</span></div>
           </div>
           <div className="value-item">
             <span className="value-symbol"><ArrowUpRight size={19} /></span>
-            <div><strong>Direct from makers</strong><span>More value for artisans</span></div>
+            <div><strong>{t("Direct from makers")}</strong><span>{t("More value for artisans")}</span></div>
           </div>
         </section>
 
         <section className="shop-section section-pad" id="shop">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">THE COLLECTION</span>
-              <h2>Made to be <em>discovered.</em></h2>
-              <p>Meaningful pieces from makers who keep tradition alive.</p>
+              <span className="eyebrow">{t("THE COLLECTION")}</span>
+              <h2>{t("Made to be ")}<em>{t("discovered.")}</em></h2>
+              <p>{t("Meaningful pieces from makers who keep tradition alive.")}</p>
             </div>
-            <span className="result-count">{filteredProducts.length} pieces</span>
+            <span className="result-count">{filteredProducts.length} {t("pieces")}</span>
           </div>
 
           <div className="shop-toolbar">
-            <div className="craft-filters" aria-label="Filter by craft">
+            <div className="craft-filters" aria-label={t("Filter by craft")}>
               {crafts.map((craft) => (
                 <button key={craft}
                   className={`filter-chip ${activeCraft === craft ? "selected" : ""}`}
                   onClick={() => setActiveCraft(craft)}>
-                  {craft}
+                  {t(craft)}
                 </button>
               ))}
             </div>
@@ -676,18 +684,18 @@ export default function App() {
                 <Search size={17} />
                 <input value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Find a piece..." aria-label="Search products" />
+                  placeholder={t("Find a piece...")} aria-label={t("Search products")} />
                 {searchTerm && <button onClick={() => setSearchTerm("")}
-                  aria-label="Clear search"><X size={15} /></button>}
+                  aria-label={t("Clear search")}><X size={15} /></button>}
               </label>
               <label className="sort-box">
                 <SlidersHorizontal size={16} />
                 <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}
-                  aria-label="Sort products">
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: low to high</option>
-                  <option value="price-high">Price: high to low</option>
-                  <option value="name">Name: A to Z</option>
+                  aria-label={t("Sort products")}>
+                  <option value="featured">{t("Featured")}</option>
+                  <option value="price-low">{t("Price: low to high")}</option>
+                  <option value="price-high">{t("Price: high to low")}</option>
+                  <option value="name">{t("Name: A to Z")}</option>
                 </select>
               </label>
             </div>
@@ -695,8 +703,8 @@ export default function App() {
 
           {showFavoritesOnly && (
             <div className="favorites-banner">
-              <Heart size={16} /> Showing your saved pieces.
-              <button onClick={() => setShowFavoritesOnly(false)}>Show everything</button>
+              <Heart size={16} /> {t("Showing your saved pieces.")}
+              <button onClick={() => setShowFavoritesOnly(false)}>{t("Show everything")}</button>
             </div>
           )}
 
@@ -711,11 +719,11 @@ export default function App() {
           ) : (
             <div className="no-results">
               <Search size={28} strokeWidth={1.4} />
-              <h3>Nothing here just yet.</h3>
-              <p>Try another search or explore the full collection.</p>
+              <h3>{t("Nothing here just yet.")}</h3>
+              <p>{t("Try another search or explore the full collection.")}</p>
               <button className="button button-outline" onClick={() => {
                 setActiveCraft("All crafts"); setSearchTerm(""); setShowFavoritesOnly(false);
-              }}>Clear filters</button>
+              }}>{t("Clear filters")}</button>
             </div>
           )}
         </section>
@@ -723,32 +731,32 @@ export default function App() {
         <section className="story-section" id="our-story">
           <div className="story-image">
             <img src="https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=1200&q=85"
-              alt="A handmade creative workspace" loading="lazy" />
+              alt={t("A handmade creative workspace")} loading="lazy" />
             <div className="story-image-note">
               <span className="story-note-mark">ಕಾ</span>
-              <span>Made with patience.<br />Shared with pride.</span>
+              <span>{t("Made with patience.")}<br />{t("Shared with pride.")}</span>
             </div>
           </div>
           <div className="story-copy">
-            <span className="eyebrow">A LITTLE ABOUT US</span>
-            <h2>Every handmade piece has a <em>human story.</em></h2>
-            <p>Behind every stitch, weave, and curve is someone who has spent years learning their craft. We want those makers to be seen, their work to be valued, and their stories to travel further.</p>
-            <p>KAYAKA brings Karnataka’s regional crafts closer to the people who love them, making it easier to discover handmade work and connect with the people behind it.</p>
+            <span className="eyebrow">{t("A LITTLE ABOUT US")}</span>
+            <h2>{t("Every handmade piece has a ")}<em>{t("human story.")}</em></h2>
+            <p>{t("Behind every stitch, weave, and curve is someone who has spent years learning their craft. We want those makers to be seen, their work to be valued, and their stories to travel further.")}</p>
+            <p>{t("KAYAKA brings Karnataka’s regional crafts closer to the people who love them, making it easier to discover handmade work and connect with the people behind it.")}</p>
             <button className="button button-outline" onClick={goToShop}>
-              Find your piece <ArrowRight size={17} />
+              {t("Find your piece")} <ArrowRight size={17} />
             </button>
-            <div className="story-signoff">Made by hands, with heart.</div>
+            <div className="story-signoff">{t("Made by hands, with heart.")}</div>
           </div>
         </section>
 
         <section className="maker-banner">
           <div>
-            <span className="eyebrow">GOOD CRAFT DESERVES A WIDER AUDIENCE</span>
-            <h2>For the makers.<br /><em>For the love of handmade.</em></h2>
+            <span className="eyebrow">{t("GOOD CRAFT DESERVES A WIDER AUDIENCE")}</span>
+            <h2>{t("For the makers.")}<br /><em>{t("For the love of handmade.")}</em></h2>
           </div>
-          <p>A thoughtful marketplace that helps handmade work find the people who will cherish it.</p>
+          <p>{t("A thoughtful marketplace that helps handmade work find the people who will cherish it.")}</p>
           <button className="button button-light" onClick={goToShop}>
-            Browse handmade <ArrowUpRight size={17} />
+            {t("Browse handmade")} <ArrowUpRight size={17} />
           </button>
         </section>
       </main>
@@ -757,29 +765,29 @@ export default function App() {
         <div className="footer-main">
           <div className="footer-brand-block">
             <Brand onClick={goHome} />
-            <p>Celebrating the hands and heritage behind handmade Karnataka.</p>
-            <span className="footer-location"><MapPin size={14} /> Coastal Karnataka, India</span>
+            <p>{t("Celebrating the hands and heritage behind handmade Karnataka.")}</p>
+            <span className="footer-location"><MapPin size={14} /> {t("Coastal Karnataka, India")}</span>
           </div>
           <div className="footer-links">
-            <strong>Explore</strong>
-            <button onClick={goToShop}>Shop all</button>
-            <button onClick={() => { setActiveCraft("Kasuti Embroidery"); goToShop(); }}>Kasuti embroidery</button>
-            <button onClick={() => { setActiveCraft("Basketry"); goToShop(); }}>Basketry</button>
+            <strong>{t("Explore")}</strong>
+            <button onClick={goToShop}>{t("Shop all")}</button>
+            <button onClick={() => { setActiveCraft("Kasuti Embroidery"); goToShop(); }}>{t("Kasuti embroidery")}</button>
+            <button onClick={() => { setActiveCraft("Basketry"); goToShop(); }}>{t("Basketry")}</button>
           </div>
           <div className="footer-links">
-            <strong>Our values</strong>
-            <a href="#our-story">Our story</a>
-            <a href="#shop">Made by hand</a>
-            <a href="#shop">Support local makers</a>
+            <strong>{t("Our values")}</strong>
+            <a href="#our-story">{t("Our story")}</a>
+            <a href="#shop">{t("Made by hand")}</a>
+            <a href="#shop">{t("Support local makers")}</a>
           </div>
           <div className="footer-social">
-            <strong>Keep in touch</strong>
-            <p>Good craft is always worth sharing.</p>
+            <strong>{t("Keep in touch")}</strong>
+            <p>{t("Good craft is always worth sharing.")}</p>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} KAYAKA. A handmade marketplace concept.</span>
-          <span>Made with care in Karnataka.</span>
+          <span>© {new Date().getFullYear()} KAYAKA. {t("A handmade marketplace concept.")}</span>
+          <span>{t("Made with care in Karnataka.")}</span>
         </div>
       </footer>
 

@@ -1,6 +1,13 @@
 // js/app.js - Complete PWA Logic & Handlers with LocalStorage Persistence
 
-let currentLang = 'kn';
+let currentLang = (() => {
+  try {
+    return localStorage.getItem('kalasetu_language') === 'en' ? 'en' : 'kn';
+  } catch (error) {
+    console.error("Failed to load language preference:", error);
+    return 'kn';
+  }
+})();
 
 // --- LocalStorage Persistence Integration ---
 const STORAGE_KEY = 'kalasetu_artisan_listings';
@@ -167,11 +174,17 @@ function switchScreen(screenId) {
 
 function toggleLanguage() {
   currentLang = currentLang === 'kn' ? 'en' : 'kn';
+  try {
+    localStorage.setItem('kalasetu_language', currentLang);
+  } catch (error) {
+    console.error("Failed to save language preference:", error);
+  }
   updateLanguageUI();
 }
 
 function updateLanguageUI() {
   const texts = i18nDict[currentLang];
+  document.documentElement.lang = currentLang;
   if (window.APP_CONFIG) {
     document.getElementById("page-title").innerText = window.APP_CONFIG.appName[currentLang];
     document.getElementById("app-brand-name").innerText = window.APP_CONFIG.appName[currentLang];
