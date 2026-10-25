@@ -105,7 +105,7 @@ const products = [
     id: 10, slug: "palm-leaf-artisan",
     name: "Sunrise Palm Leaf Placemats", craft: "Palm Leaf Craft",
     artisan: "Local Palm Leaf Artisan", location: "Coastal Karnataka", price: 720,
-    image: "https://images.unsplash.com/photo-1603199506016-b9a594b593c0?auto=format&fit=crop&w=900&q=85",
+    image: "https://images.unsplash.com/photo-1693740784717-67fcaad5526a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
     description: "A set of four woven placemats that bring the texture of the coast to the everyday table.",
     color: "#E4D6AE", tag: "Set of four",
   },
